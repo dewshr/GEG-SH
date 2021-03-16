@@ -1,7 +1,5 @@
 name: safe_harbor
 channels:
- - bioconda
- - plotly
  - conda-forge
  - defaults
 dependencies:
