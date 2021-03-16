@@ -67,7 +67,7 @@ if args.tad_domain == None:
 	gene_density = gene_density.set_index('name')
 
 	# tad domain information for genes
-	genes_tad = pd.read_csv('./overlap_regions_only/genes_tad_overlap.bed', sep='\t', header=None).iloc[:,[3,5,6,7]]
+	genes_tad = pd.read_csv('./data/genes_tad.bed', sep='\t', header=None).iloc[:,[3,5,6,7]]
 	genes_tad.columns = ['gene','chr','start','end']
 	genes_tad['name'] = genes_tad.chr + '-'+ genes_tad['start'].map(str)+'-'+genes_tad['end'].map(str)
 	genes_tad = genes_tad.groupby('gene').agg(lambda x: list(set(list(x))))
@@ -135,7 +135,7 @@ mei_nearby_cancer_list = mei_nearby_cancer['id'].tolist()
 
 # MEIs overlap region with TAD domain
 if args.tad_domain == None:
-	os.system('bedtools intersect -a {}/sorted_mei_coordinates.bed -b ./tad/merged_gm12878.bed  -wb > {}/mei_tad.bed'.format(dir_,dir_)) 
+	os.system('bedtools intersect -a {}/sorted_mei_coordinates.bed -b ./data/merged_gm12878.bed  -wb > {}/mei_tad.bed'.format(dir_,dir_)) 
 else:
 	os.system('bedtools intersect -a {}/sorted_mei_coordinates.bed -b {} -wb > {}/mei_tad.bed'.format(dir_,args.tad_domain, dir_)) 
 
