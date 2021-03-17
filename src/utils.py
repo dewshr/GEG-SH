@@ -38,17 +38,6 @@ def fdr_filter(x, threshold):
 
 
 
-######################## function to filter using user defined tissue ###############
-@logger.catch
-def tissue_filter(x):
-	for tissue in x:
-		if args.tissue.lower() in tissue.lower():
-			return True
-
-	return False
-
-
-
 ######################## removing the oncogenic eQTL genes ###############
 @logger.catch
 def filter_tumor_repressor_genes(x, tumor_repressor_genes_list):
@@ -60,6 +49,8 @@ def filter_tumor_repressor_genes(x, tumor_repressor_genes_list):
 	else:
 		return True
 
+
+################ function to check for nearby tumor repressor or oncogenes
 @logger.catch
 def filter_nearby_cancer_genes(x, mei_nearby_cancer_list):
 	#print(length)
@@ -69,6 +60,8 @@ def filter_nearby_cancer_genes(x, mei_nearby_cancer_list):
 		return True
 	else:
 		return False
+
+
 
 ############# function to check if the ME and gene interacted are in same tad domain ######
 @logger.catch
@@ -93,6 +86,7 @@ def check_tad(snp, gene, mei_tad, genes_tad):
 		return 0
 	
 
+
 ###################### function to check if ME lies in active chromatin region ######
 @logger.catch
 def check_active_status(x, active_region_list):
@@ -103,6 +97,7 @@ def check_active_status(x, active_region_list):
 		return False
 
 
+
 ################## functuion to assign the tad domain information to ME #########
 @logger.catch
 def get_tad_info(x, mei_tad):
@@ -111,6 +106,10 @@ def get_tad_info(x, mei_tad):
 	except:
 		return ['-']
 
+
+
+
+########################## rounding off the decimal values ##################
 @logger.catch
 def get_round_value(x):
     try:
@@ -119,6 +118,8 @@ def get_round_value(x):
         return x
 
 
+
+########################### tagging the raw data file if it passed all the filters or not ####################
 @logger.catch
 def check_final_list(x, final_list):
 	if x in final_list:
@@ -127,6 +128,7 @@ def check_final_list(x, final_list):
 		return False
 
 
+################################# generating bed files using position column #######################
 @logger.catch
 def get_bed_file(df):
 	x = df.position
@@ -136,6 +138,9 @@ def get_bed_file(df):
 	#else:
 	return x_list[0], int(x_list[1]), int(x_list[2])
 
+
+
+######################## extracting nearby genes for the given MEIs ######################
 @logger.catch
 def get_nearby_genes(x, mei_nearby_cancer):
 	try:
@@ -144,9 +149,3 @@ def get_nearby_genes(x, mei_nearby_cancer):
 		return ''
 
 
-@logger.catch
-def check_ins(df):
-	if 'chr3_37361602_INS_ME_ALU' in df.id.tolist():
-		print('\n--------yes------\n')
-	else:
-		print('\n--------no------\n')
