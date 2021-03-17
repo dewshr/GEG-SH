@@ -307,7 +307,7 @@ filtered_data = filtered_data[(filtered_data['same_cancer_tad']==False)&(filtere
 
 logger.info('generating output files....')
 filtered_data['ucsc_link'] = 'http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position='+filtered_data['position'].map(str)
-filtered_data.loc[:,['id','position','ucsc_link']].to_csv(dir_+'/dosage_insensitive_'+args.file_name, index=False)
+filtered_data.loc[:,['id','position','ucsc_link']].to_csv(dir_+'/filtered_'+args.file_name, index=False)
 
 all_data['passed_all_filter'] = all_data['id'].apply(lambda x: check_final_list(x, filtered_data['id'].tolist()))
 all_data['tad_name'] = all_data['tad_name'].apply(lambda x: ','.join(x))
