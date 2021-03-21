@@ -239,12 +239,16 @@ all_data['nearby_cancer_gene_names'] = all_data['id'].apply(lambda x: get_nearby
 if args.active_region != None:
 	logger.info('running bedtools to get the information regarding overlap with active transcription region')
 	os.system('bedtools intersect -a {}/sorted_mei_coordinates.bed -b {} -wb > {}/mei_active.bed'.format(dir_,args.active_region,dir_))
-	active_region = pd.read_csv(dir_+'/mei_active.bed',sep='\t', header=None)
-	active_region_list = active_region.iloc[:,3].tolist()
+else:
+	logger.info('running bedtools to get the information regarding overlap with active transcription region using default file "blood_active_transcription_marks.bed".')
+	os.system('bedtools intersect -a {}/sorted_mei_coordinates.bed -b  ./data/blood_active_transcription_marks.bed -wb > {}/mei_active.bed'.format(dir_,dir_))
 
-	logger.info('tagging ME overlapping with active chromatin region as True')
-	#filter7['active_region'] = filter7['id'].apply(lambda x: check_active_status(x, active_region_list))
-	all_data['active_region'] = all_data['id'].apply(lambda x: check_active_status(x, active_region_list))
+active_region = pd.read_csv(dir_+'/mei_active.bed',sep='\t', header=None)
+active_region_list = active_region.iloc[:,3].tolist()
+
+logger.info('tagging ME overlapping with active chromatin region as True')
+#filter7['active_region'] = filter7['id'].apply(lambda x: check_active_status(x, active_region_list))
+all_data['active_region'] = all_data['id'].apply(lambda x: check_active_status(x, active_region_list))
 
 
 
