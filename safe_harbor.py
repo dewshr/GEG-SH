@@ -33,13 +33,13 @@ if not os.path.exists(args.output):
 
 logger_path = os.path.abspath(args.output)
 logger.add(logger_path+'/mei_filter{time}.log', rotation='10 MB')
-
+logger.level("WARNING", color="<bold><red>")
 
 dir_ = os.path.abspath(args.output) 
 
 
 if args.input == None:
-	logger.info('input file not provided. Exiting....')
+	logger.error('input file not provided. Exiting....')
 	parser.print_help()
 	sys.exit(1)
 
@@ -112,7 +112,11 @@ else:
 
 logger.info('reading in the input file: {}'.format(args.input))
 input_data = pd.read_csv(args.input, sep='\t')	# reading in SNP eQTL data
+columns = [x.lower() for x in input_data.columns.tolist()]
+input_data.columns = columns
 input_data['chr'], input_data['start'], input_data['stop'] = zip(*input_data.apply(get_bed_file, axis=1))
+
+columns_names = input_data.columns
 
 
 # extending the sequence to look for tumor repressor or oncogenes nearby
@@ -258,10 +262,12 @@ all_data['active_region'] = all_data['id'].apply(lambda x: check_active_status(x
 if args.thresh != None:
 	logger.info('filtering by FDR > {}'.format(args.thresh))
 
-	all_data['fdr_test'] = all_data['FDR'].apply(lambda x: fdr_filter(str(x).split(','), args.thresh))
+	all_data['fdr_test'] = all_data['fdr'].apply(lambda x: fdr_filter(str(x).split(','), args.thresh))
 	#logger.info('filter6 shape (after removing ME with FDR) > {} : {}'.format(args.thresh, filter6.shape))
 	filtered_data = all_data[all_data['fdr_test']== True]
 else:
+	if 'fdr' in columns:
+		logger.warning('\n\n----------- !!! Warning !!! -------------------\n\n there seems to be fdr column in input file, but fdr parameter is not used, so filtration steps is carried out without using fdr column.\n\n-----------------------------------------------\n')
 	filtered_data = all_data.copy()
 
 
@@ -274,14 +280,17 @@ else:
 if args.allele_freq != None:
 	logger.info('filtering by allele frequency > {}'.format(args.allele_freq))
 	#filter5 = filter4[filter4['AF'] > float(args.allele_freq)]
-	all_data['AF'] = all_data['AF'].apply(lambda x: get_round_value(x))
-	filtered_data = filtered_data[filtered_data['AF']> float(args.allele_freq)]
+	all_data['af'] = all_data['af'].apply(lambda x: get_round_value(x))
+	filtered_data = filtered_data[filtered_data['af']> float(args.allele_freq)]
 	#logger.info('filter5 shape (after removing ME with AF) > {} : {}'.format(args.allele_freq, filter5.shape))
+else:
+	if 'af' in columns:
+		logger.warning('\n\n----------- !!! Warning !!! -------------------\n\n there seems to be allele frequency column in input file, but "af" parameter is not used, so filtration steps is carried out without using "af" column.\n\n-----------------------------------------------\n')
 
 
 
 if args.eqtl_genes != False:
-	all_data['eQTL_test'] = all_data['eQTl'].apply(lambda x: filter_tumor_repressor_genes(x.split(','), tumor_repressor_genes_list))
+	all_data['eQTL_test'] = all_data['eqtl'].apply(lambda x: filter_tumor_repressor_genes(x.split(','), tumor_repressor_genes_list))
 
 	eqtl_passed_MEIs = all_data[all_data['eQTL_test']==False]['id'].tolist()
 	#print(eqtl_passed_MEIs)
@@ -320,7 +329,7 @@ all_data['hic_interacted_gene'] = all_data['hic_interacted_gene'].apply(lambda x
 all_data.rename(columns={'gene_density':'gene_density (genes per million tad)', 'hic_interacted_gene_test':'hic_interacted_genes (oncogenic or tumor repressor)','nearby_cancer_genes':'nearby_cancer_genes ({}kb)'.format(dist)}, inplace=True)
 all_data.to_csv(dir_+'/'+args.file_name)
 
-logger.info('\n\nThe total number of MEI id after removing dosage sensitive genes:  {}'.format(filtered_data.shape[0]))
+logger.success('\n\nThe total number of MEI id after removing dosage sensitive genes:  {}\n'.format(filtered_data.shape[0]))
 
 
 try:
