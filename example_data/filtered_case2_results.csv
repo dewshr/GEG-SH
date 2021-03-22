@@ -1,0 +1,5 @@
+id,position,ucsc_link
+chr1_198243300_INS_ME_ALU,chr1:198243300-198243300,http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr1:198243300-198243300
+chr2_15519553_INS_ME_ALU,chr2:15519553-15519553,http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr2:15519553-15519553
+chr2_65333803_INS_ME_ALU,chr2:65333803-65333803,http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr2:65333803-65333803
+chr3_37361602_INS_ME_ALU,chr3:37361602-37361602,http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr3:37361602-37361602
