@@ -1,5 +1,9 @@
 # Safe Harbor
-The script allows filtering of the given Mobile Element Insertion sites (MEIs) based on different parameters provided by the user such as allele frequency, false discovery rate (FDR), nearby tumor repressor genes or oncogenes etc.
+The script allows filtering of the given different variants on different parameters provided by the user such as allele frequency, false discovery rate (FDR), nearby tumor repressor genes or oncogenes etc. The main purpose is to narrow down the variant positions which can be then tested and used for gene therapy purpose
+
+------
+> **_NOTE:_** The program is based on hg19 version.
+------
 
 <br/>
 
@@ -7,15 +11,24 @@ The script allows filtering of the given Mobile Element Insertion sites (MEIs) b
 - [Prerequisites](#1-prerequisites)
 - [Input file format](#2-input-file-format)
 - [Running the program](#3-running-the-program)
+- [Data Description](#4-data-description)
 
 <br/>
 
 <br/>
 
 ## 1) Prerequisites
-The dependencies required for the program are listed in ***environment.yml*** file. The dependencies can be installed individually or if you have conda installed, following code can be used to create separate environment with the dependencies installed:
+Before running the program user has to install all the required dependencies. User can follow either of following steps for that purpose:
+- **Using Conda :** User can use ***environment.yml*** using conda to create a new environment with required dependensies. If you have conda installed, following code can be used to create separate environment with the dependencies installed:
 `conda env create -f environment.yml`
+After this you can activate the created environment using following command:
+`conda activate safe_harbor`
 
+  If user does not have conda installed. You can download either of it from the link below:
+  - [anaconda](https://www.anaconda.com/distribution/)
+  - [miniconda](https://docs.conda.io/en/latest/miniconda.html)
+
+- **Using pip :** The user have to install all the dependensies one by one using ***pip***.
 <br/>
 
 <br/>
@@ -78,31 +91,31 @@ Here is the description of the different parameters:
 - **input** : this parameter takes the input file. This is the only required parameter without which program will not run. The input file has to be in tab delimited format with at least two columns `id and position`.
 <br/>
 
-- **thresh** : this parameter is used to filter the column FDR. If the input file doesn't have this column, no need to use this parameter, otherwise it will give an error. But if the input file has FDR, but this parameter is not passed, then FDR column will be ignored and would not be considered for filtration steps. If there are multiple FDR values, each value should be separated by `,`.
+- **thresh** : this parameter is used to filter the column FDR, keeping all those variants with FDR > threshold. If the input file doesn't have this column, no need to use this parameter, otherwise it will give an error. But if the input file has FDR, but this parameter is not passed, then FDR column will be ignored and would not be considered for filtration steps. If there are multiple FDR values, each value should be separated by `,`.
 <br/>
 
-- **eqtl_genes** : this parameter takes boolean value as `True or False`. If your input file has eQTL genes associated with MEIs, then user need to pass the parameter as True, by default it is set to ***False***. If there are multiple eQTL genes, each gene should be separated by `,`.
+- **eqtl_genes** : this parameter takes boolean value as `True or False`. If your input file has eQTL genes associated with MEIs, then user need to pass the parameter as True, by default it is set to ***False***. If there are multiple eQTL genes, each gene should be separated by `,`. The eQTL genes names are expected to be in **gene symbol format**.
 <br/>
 
-- **tad_domain** : this parameter takes the TAD domain information file in bed file format. The default value is set to `None`, so if user does not pass any file, it will look for the provided file in data folder (***merged_gm12878.bed***)
+- **tad_domain** : this parameter takes the TAD domain information file in bed file format. The default value is set to `None`, so if user does not pass any file, it will look for the provided file in data folder (***merged_gm12878.bed***). This file is used for several purpose, to assign TAD domain information to the variants and genes, calculate gene density, and check the common TAD domain between variant and tumor repressor or oncogenes
 <br/>
 
-- **repressive_region** : this parameter takes repressive chromatin region information in bed file format. If user does not use this parameter, default file (**blood_repressive_marks.bed**) will be used.
+- **repressive_region** : this parameter takes repressive chromatin region information in bed file format. This file is used to remove the variants that overlap with any repressive chromatin region. If user does not use this parameter, default file (**blood_repressive_marks.bed**) will be used.
 <br/>
 
-- **active_region** : this parameter takes active chromatin region information in bed file format. This file is only used to tag, if the MEIs overlap with any active chromatin region or not. In absence of this parameter the tagging step is ignored.
+- **active_region** : this parameter takes active chromatin region information in bed file format. This file is only used to tag the variants that overlap with any active chromatin region. In absence of this parameter the tagging step is ignored. If user does not use this parameter, default file (**blood_active_transcription_marks.bed**) will be used.
 <br/>
 
-- **gene_density** : this parameter takes the gene density value that the user wants to allow in a tad domain. If the user does not pass any value mean gene density of all TAD domains are used. Gene density for each TAD domain is calculated by: `(total gene in particular TAD domain/ length of TAD domain) * 1000000` as `genes per million TAD`
+- **gene_density** : this parameter takes the gene density value that the user wants to allow in a TAD domain. If the user does not pass any value mean gene density of all TAD domains are used. Gene density for each TAD domain is calculated by: `(total gene in particular TAD domain/ length of TAD domain) * 1000000` as `genes per million TAD`
 <br/>
 
 - **output** : this parameter takes output folder name. **results** is used as default folder name.
 <br/>
 
-- **allele_frequency** : this parameter is used to filter the column AF. If the input file doesn't have this column, no need to use this parameter, otherwise it will give an error. But if the input file has AF, but this parameter is not passed, then AF column will be ignored and would not be considered for filtration steps.
+- **allele_frequency** : this parameter is used to filter the column AF, keeping all those variants with AF > threshold. If the input file doesn't have this column, no need to use this parameter, otherwise it will give an error. But if the input file has AF, but this parameter is not passed, then AF column will be ignored and would not be considered for filtration steps.
 <br/>
 
-- **hic_interaction** : this parameter takes the chromatin interaction file. The file should have 4 columns: `chr, start, stop and gene`.
+- **hic_interaction** : this parameter takes the chromatin interaction file. The file should have 4 columns: `chr, start, stop and gene`. This file is used to check if any of the variant involved interaction involve tumor repressor or oncogenes and dosage sensitive genes.
 <br/>
 
 - **nearby_cancer_genes** : this parameter takes the value in base pair. The value represents how many base pairs upstream and downstream, the user wants to look for tumor repressor or oncogenes. The default value is `50000 (50 kb)`.
@@ -119,3 +132,22 @@ Here is the description of the different parameters:
 <br/>
 
 <br/>
+
+## 3) Data Description
+- ***merged_gm12878.bed :*** This is the TAD domain file. It is downloaded from [Rao et al, Cell, 2014](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE63525)
+
+- ***oncogenes_and_tumor_repressor_genes.bed :*** This is the list of tumor repressors and oncogenes downloaded from [tumor repressor link](https://bioinfo.uth.edu/TSGene/?csrt=14252334967482590952) and [oncogenes link](http://ongene.bioinfo-minzhao.org)
+
+- ***blood_hic_interaction.bed :*** This file list chromatin interactions involving different blood cells. It is downloaded from (Javierre et al, Cell, 2016)[https://pubmed.ncbi.nlm.nih.gov/27863249/]
+
+- ***dosage_sensitive_genes.txt :*** This is the list of dosage sensitive genes. This is downloaded from (Exome Aggregation Consortium, Nature, 2016)[https://www.nature.com/articles/nature19057]
+
+- ***sorted_gene_annotation.bed:*** This is genes list with their start and stop position. It is downloaded using Biomart hg19 version.
+
+- ***blood_repressive_marks :*** This contains the chromatin regions that are assigned to be repressive in nature based on ChromHMM. The files associated with **blood** are filtered using column **ANATOMY** from [Roadmap, 2013](https://docs.google.com/spreadsheets/d/1yikGx4MsO9Ei36b64yOy9Vb6oPC5IBGlFbYEt-N6gOM/edit#gid=15), and then regions labelled as `Het, ReprPC, ReprPCWk, Quies` were extracted.
+
+- ***blood_active_transcription_marks :*** This contains the chromatin regions that are assigned to be active in nature based on ChromHMM. The files associated with **blood** are filtered using column **ANATOMY** from [Roadmap, 2013](https://docs.google.com/spreadsheets/d/1yikGx4MsO9Ei36b64yOy9Vb6oPC5IBGlFbYEt-N6gOM/edit#gid=15), and then regions labelled as `TssA, TssAFlnk, Tx, TxWk` were extracted.
+
+- ***genes_tad.bed :*** This file provides the TAD domain information for the genes in **sorted_gene_annotation.bed**. The file is generated using [bedtools intersect](https://bedtools.readthedocs.io/en/latest/content/tools/intersect.html).
+
+- ***gene_density_all_tad.csv :*** This is the pre-calculated gene density information for the TAD domains in **merged_gm12878.bed**. This file is generated using **genes_tad.bed**.
