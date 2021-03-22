@@ -41,7 +41,7 @@ The input file should be in tab delimited format. The minimum requirement for th
 
 <br/>
 
-> **_NOTE_** The column name has to be in same exact format but no particular order.
+> **_NOTE_** The column name has to be same. The names can be upper or lower case.
 
 <br/>
 
