@@ -21,7 +21,7 @@ parser.add_argument('-gd', '--gene_density', default = None, help='gene density 
 parser.add_argument('-o', '--output', default='./results', help ='ouput folder name')
 parser.add_argument('-af', '--allele_freq', default = None, help ='threshold allele frequency of the snp to filter')
 parser.add_argument('-hic', '--hic_interaction', default = './data/blood_hic_interaction.bed', help='hic-promoter interaction bed file')
-parser.add_argument('-l', '--nearby_cancer_genes', default = 50000, help='any MEI with oncogenes or tumor repressor genes 50kb upstream or downstream will be removed')
+parser.add_argument('-l', '--nearby_cancer_genes', default = 50000, help='any variant with oncogenes or tumor repressor genes 50kb upstream or downstream will be removed')
 parser.add_argument('-fname','--file_name', default='result.csv', help='output file name')
 
 args = parser.parse_args()
@@ -32,7 +32,7 @@ if not os.path.exists(args.output):
 	os.makedirs(os.path.join(args.output, 'temp_files'))
 
 logger_path = os.path.abspath(args.output)
-logger.add(logger_path+'/mei_filter{time}.log', rotation='10 MB')
+logger.add(logger_path+'/variant_filter{time}.log', rotation='10 MB')
 logger.level("WARNING", color="<bold><red>")
 
 dir_ = os.path.abspath(args.output) 
@@ -126,37 +126,37 @@ input_data = input_data.sort_values(by=['chr','start'], ascending=[True, True])
 #input_data['tissue'] ='.'
 
 logger.info('creating bed file from the input data')
-input_data.loc[:,['chr','start','stop','id']].to_csv(os.path.join(dir_,'sorted_mei_coordinates.bed'), header=False, sep='\t',index=False)		# writing bed file for snp coordinates
-input_data.loc[:,['chr','extended_start','extended_stop','id']].to_csv(os.path.join(dir_,'sorted_extended_mei_coordinates.bed'), header=False, sep='\t',index=False)
+input_data.loc[:,['chr','start','stop','id']].to_csv(os.path.join(dir_,'sorted_variant_coordinates.bed'), header=False, sep='\t',index=False)		# writing bed file for snp coordinates
+input_data.loc[:,['chr','extended_start','extended_stop','id']].to_csv(os.path.join(dir_,'sorted_extended_variant_coordinates.bed'), header=False, sep='\t',index=False)
 
 logger.info('looking for nearby tumor repressor or oncogenes')
-os.system('bedtools intersect -a {}/sorted_extended_mei_coordinates.bed -b ./data/oncogenes_and_tumor_repressor_genes.bed -wb > {}/oncogenic_tumor_repressor_MEI.bed'.format(dir_,dir_))
+os.system('bedtools intersect -a {}/sorted_extended_variant_coordinates.bed -b ./data/oncogenes_and_tumor_repressor_genes.bed -wb > {}/oncogenic_tumor_repressor_variant.bed'.format(dir_,dir_))
 
-mei_nearby_cancer = pd.read_csv('results/oncogenic_tumor_repressor_MEI.bed', header=None, sep='\t')
-mei_nearby_cancer.columns = ['chr','start','stop','id','c_chr','c_start','c_stop','genes','gene_id']
-mei_nearby_cancer_list = mei_nearby_cancer['id'].tolist()
+variant_nearby_cancer = pd.read_csv('results/oncogenic_tumor_repressor_variant.bed', header=None, sep='\t')
+variant_nearby_cancer.columns = ['chr','start','stop','id','c_chr','c_start','c_stop','genes','gene_id']
+variant_nearby_cancer_list = variant_nearby_cancer['id'].tolist()
 
 
 # variants overlap region with TAD domain
 if args.tad_domain == None:
-	os.system('bedtools intersect -a {}/sorted_mei_coordinates.bed -b ./data/merged_gm12878.bed  -wb > {}/mei_tad.bed'.format(dir_,dir_)) 
+	os.system('bedtools intersect -a {}/sorted_variant_coordinates.bed -b ./data/merged_gm12878.bed  -wb > {}/variant_tad.bed'.format(dir_,dir_)) 
 else:
-	os.system('bedtools intersect -a {}/sorted_mei_coordinates.bed -b {} -wb > {}/mei_tad.bed'.format(dir_,args.tad_domain, dir_)) 
+	os.system('bedtools intersect -a {}/sorted_variant_coordinates.bed -b {} -wb > {}/variant_tad.bed'.format(dir_,args.tad_domain, dir_)) 
 
 
 
 
 #logger.info('reading in the variants with TAD overlap information')
-mei_tad = pd.read_csv(dir_+'/mei_tad.bed',header=None, sep='\t').iloc[:,[3,4,5,6]] # only taking the columns that represents snp, chr, start and end
-mei_tad.columns = ['snp','chr','start','end']
-mei_tad['tad_name'] = mei_tad['chr'] + '-'+mei_tad['start'].map(str)+'-'+mei_tad['end'].map(str)
-mei_tad = mei_tad.groupby('snp').agg(lambda x: list(x))
-mei_tad = pd.DataFrame(mei_tad.iloc[:,3])
-#mei_tad['snp'] = mei_tad.index
+variant_tad = pd.read_csv(dir_+'/variant_tad.bed',header=None, sep='\t').iloc[:,[3,4,5,6]] # only taking the columns that represents snp, chr, start and end
+variant_tad.columns = ['snp','chr','start','end']
+variant_tad['tad_name'] = variant_tad['chr'] + '-'+variant_tad['start'].map(str)+'-'+variant_tad['end'].map(str)
+variant_tad = variant_tad.groupby('snp').agg(lambda x: list(x))
+variant_tad = pd.DataFrame(variant_tad.iloc[:,3])
+#variant_tad['snp'] = variant_tad.index
 
 
 logger.info('assigning tad domain information to variants')
-input_data['tad_name'] = input_data['id'].apply(lambda x: get_tad_info(x, mei_tad))
+input_data['tad_name'] = input_data['id'].apply(lambda x: get_tad_info(x, variant_tad))
 
 
 logger.info('checking common TAD domain betweem variants and  tumor repressor/oncogenes')
@@ -184,28 +184,28 @@ input_data['gene_density'] = input_data['tad_name'].apply(lambda x: calculate_ge
 
 
 logger.info('running bedtools to get the information regarding overlap with hic-promoter interaction region')
-os.system('bedtools intersect -a {}/sorted_mei_coordinates.bed -b {} -wao > {}/mei_promoter_interaction.bed'.format(dir_, args.hic_interaction, dir_))
+os.system('bedtools intersect -a {}/sorted_variant_coordinates.bed -b {} -wao > {}/variant_promoter_interaction.bed'.format(dir_, args.hic_interaction, dir_))
 
-mei_hic_promoter = pd.read_csv(dir_+'/mei_promoter_interaction.bed',sep='\t', header=None)
-mei_hic_promoter.columns = ['chr','start','end','snp','hic_chr','hic_start','hic_end','hic_interacted_gene', 'overlap']
-mei_hic_promoter = mei_hic_promoter.drop_duplicates()
+variant_hic_promoter = pd.read_csv(dir_+'/variant_promoter_interaction.bed',sep='\t', header=None)
+variant_hic_promoter.columns = ['chr','start','end','snp','hic_chr','hic_start','hic_end','hic_interacted_gene', 'overlap']
+variant_hic_promoter = variant_hic_promoter.drop_duplicates()
 
 logger.info('checking if the interacted gene and variants are in same TAD domain')
-mei_hic_promoter['common_tad'] = mei_hic_promoter.apply(lambda x: check_tad(x.snp, x.hic_interacted_gene, mei_tad, genes_tad), axis=1)
+variant_hic_promoter['common_tad'] = variant_hic_promoter.apply(lambda x: check_tad(x.snp, x.hic_interacted_gene, variant_tad, genes_tad), axis=1)
 
-#mei_hic_promoter = mei_hic_promoter[mei_hic_promoter['common_tad']==0] #removed same tad interaction
+#variant_hic_promoter = variant_hic_promoter[variant_hic_promoter['common_tad']==0] #removed same tad interaction
 
 logger.info('checking if interacted gene falls in dosage_sensitive_genes, 1 or more value assigned depending on number of interaction, else if there is no interacted gene or does not fall in dosage_sensitive_genes then assignn 0')
-mei_hic_promoter['label'] = mei_hic_promoter['hic_interacted_gene'].apply(lambda x: 1 if x in dosage_sensitive_genes else 0)
+variant_hic_promoter['label'] = variant_hic_promoter['hic_interacted_gene'].apply(lambda x: 1 if x in dosage_sensitive_genes else 0)
 
 
-mei_hic_promoter_ = mei_hic_promoter.iloc[:,[3,-2,-1,7]].groupby('snp').agg(lambda x: list(x))
-mei_hic_promoter_['dosage_sensitive_interaction'] = mei_hic_promoter_['label'].apply(lambda x: sum(x))
-mei_hic_promoter_['common_tad_count'] = mei_hic_promoter_['common_tad'].apply(lambda x: sum(x))
+variant_hic_promoter_ = variant_hic_promoter.iloc[:,[3,-2,-1,7]].groupby('snp').agg(lambda x: list(x))
+variant_hic_promoter_['dosage_sensitive_interaction'] = variant_hic_promoter_['label'].apply(lambda x: sum(x))
+variant_hic_promoter_['common_tad_count'] = variant_hic_promoter_['common_tad'].apply(lambda x: sum(x))
 
 
 
-all_data = input_data.merge(mei_hic_promoter_.loc[:,['hic_interacted_gene','common_tad_count','dosage_sensitive_interaction']], left_on='id', right_on=mei_hic_promoter_.index)
+all_data = input_data.merge(variant_hic_promoter_.loc[:,['hic_interacted_gene','common_tad_count','dosage_sensitive_interaction']], left_on='id', right_on=variant_hic_promoter_.index)
 
 logger.info('checking if any of interacted genes are tumor repressor or oncogenes')
 all_data['hic_interacted_gene_test'] = all_data['hic_interacted_gene'].apply(lambda x: filter_tumor_repressor_genes(x, tumor_repressor_genes_list))
@@ -220,9 +220,9 @@ all_data['hic_interacted_gene_test'] = all_data['hic_interacted_gene'].apply(lam
 
 
 logger.info('running bedtools to get the information regarding overlap with heterochromatin region')
-os.system('bedtools intersect -a {}/sorted_mei_coordinates.bed -b {} -wb > {}/mei_h3k27me3.bed'.format(dir_,args.repressive_region,dir_))
+os.system('bedtools intersect -a {}/sorted_variant_coordinates.bed -b {} -wb > {}/variant_h3k27me3.bed'.format(dir_,args.repressive_region,dir_))
 
-heterochromatin = pd.read_csv(dir_+'/mei_h3k27me3.bed',sep='\t', header=None)
+heterochromatin = pd.read_csv(dir_+'/variant_h3k27me3.bed',sep='\t', header=None)
 heterochromatin_region = heterochromatin.iloc[:,3].tolist() # variants id overlapping with repressive region
 
 all_data['repressive_region'] = all_data['id'].apply(lambda x: check_active_status(x, heterochromatin_region))
@@ -232,8 +232,8 @@ all_data['repressive_region'] = all_data['id'].apply(lambda x: check_active_stat
 logger.info('checking for variants with nearby oncogenes or tumor repressor genes')
 
 #print(filter7.head())
-all_data['nearby_cancer_genes'] = all_data['id'].apply(lambda x: filter_nearby_cancer_genes(x, mei_nearby_cancer_list))
-all_data['nearby_cancer_gene_names'] = all_data['id'].apply(lambda x: get_nearby_genes(x, mei_nearby_cancer))
+all_data['nearby_cancer_genes'] = all_data['id'].apply(lambda x: filter_nearby_cancer_genes(x, variant_nearby_cancer_list))
+all_data['nearby_cancer_gene_names'] = all_data['id'].apply(lambda x: get_nearby_genes(x, variant_nearby_cancer))
 
 
 	
@@ -242,12 +242,12 @@ all_data['nearby_cancer_gene_names'] = all_data['id'].apply(lambda x: get_nearby
 
 if args.active_region != None:
 	logger.info('running bedtools to get the information regarding overlap with active transcription region')
-	os.system('bedtools intersect -a {}/sorted_mei_coordinates.bed -b {} -wb > {}/mei_active.bed'.format(dir_,args.active_region,dir_))
+	os.system('bedtools intersect -a {}/sorted_variant_coordinates.bed -b {} -wb > {}/variant_active.bed'.format(dir_,args.active_region,dir_))
 else:
 	logger.info('running bedtools to get the information regarding overlap with active transcription region using default file "blood_active_transcription_marks.bed".')
-	os.system('bedtools intersect -a {}/sorted_mei_coordinates.bed -b  ./data/blood_active_transcription_marks.bed -wb > {}/mei_active.bed'.format(dir_,dir_))
+	os.system('bedtools intersect -a {}/sorted_variant_coordinates.bed -b  ./data/blood_active_transcription_marks.bed -wb > {}/variant_active.bed'.format(dir_,dir_))
 
-active_region = pd.read_csv(dir_+'/mei_active.bed',sep='\t', header=None)
+active_region = pd.read_csv(dir_+'/variant_active.bed',sep='\t', header=None)
 active_region_list = active_region.iloc[:,3].tolist()
 
 logger.info('tagging ME overlapping with active chromatin region as True')
@@ -329,7 +329,7 @@ all_data['hic_interacted_gene'] = all_data['hic_interacted_gene'].apply(lambda x
 all_data.rename(columns={'gene_density':'gene_density (genes per million tad)', 'hic_interacted_gene_test':'hic_interacted_genes (oncogenic or tumor repressor)','nearby_cancer_genes':'nearby_cancer_genes ({}kb)'.format(dist)}, inplace=True)
 all_data.to_csv(dir_+'/'+args.file_name)
 
-logger.success('\n\nThe total number of MEI id after removing dosage sensitive genes:  {}\n'.format(filtered_data.shape[0]))
+logger.success('\n\nThe total number of variant id after removing dosage sensitive genes:  {}\n'.format(filtered_data.shape[0]))
 
 
 try:
