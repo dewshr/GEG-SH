@@ -12,7 +12,7 @@ import numpy as np
 ############### parameters for the program #################
 parser = argparse.ArgumentParser()
 parser.add_argument('-i', '--input',default = None, help='input file with mobile element id')
-parser.add_argument('-t','--thresh', default = None, help= 'fdr threshold to filter out MEIs')
+parser.add_argument('-t','--thresh', default = None, help= 'fdr threshold to filter out variants')
 parser.add_argument('-eqtl','--eqtl_genes', default = False, help= 'eQTL genes')
 parser.add_argument('-tad', '--tad_domain', default = None, help='custom tad domain file, else will use default file provided')
 parser.add_argument('-rr', '--repressive_region', default ='./data/blood_repressive_marks.bed', help ='bed file containing regions with repressive mark')
@@ -108,7 +108,7 @@ else:
 
 
 
-#################################### Reading in input files and getting TAD domain information for MEIs ###########################
+#################################### Reading in input files and getting TAD domain information for variants ###########################
 
 logger.info('reading in the input file: {}'.format(args.input))
 input_data = pd.read_csv(args.input, sep='\t')	# reading in SNP eQTL data
@@ -137,7 +137,7 @@ mei_nearby_cancer.columns = ['chr','start','stop','id','c_chr','c_start','c_stop
 mei_nearby_cancer_list = mei_nearby_cancer['id'].tolist()
 
 
-# MEIs overlap region with TAD domain
+# variants overlap region with TAD domain
 if args.tad_domain == None:
 	os.system('bedtools intersect -a {}/sorted_mei_coordinates.bed -b ./data/merged_gm12878.bed  -wb > {}/mei_tad.bed'.format(dir_,dir_)) 
 else:
@@ -146,7 +146,7 @@ else:
 
 
 
-#logger.info('reading in the MEIs with TAD overlap information')
+#logger.info('reading in the variants with TAD overlap information')
 mei_tad = pd.read_csv(dir_+'/mei_tad.bed',header=None, sep='\t').iloc[:,[3,4,5,6]] # only taking the columns that represents snp, chr, start and end
 mei_tad.columns = ['snp','chr','start','end']
 mei_tad['tad_name'] = mei_tad['chr'] + '-'+mei_tad['start'].map(str)+'-'+mei_tad['end'].map(str)
@@ -155,11 +155,11 @@ mei_tad = pd.DataFrame(mei_tad.iloc[:,3])
 #mei_tad['snp'] = mei_tad.index
 
 
-logger.info('assigning tad domain information to MEIs')
+logger.info('assigning tad domain information to variants')
 input_data['tad_name'] = input_data['id'].apply(lambda x: get_tad_info(x, mei_tad))
 
 
-logger.info('checking common TAD domain betweem MEIs and  tumor repressor/oncogenes')
+logger.info('checking common TAD domain betweem variants and  tumor repressor/oncogenes')
 input_data['same_cancer_tad'] = input_data['tad_name'].apply(lambda x: True if len(set(x)&set(cancer_tad_list))>0 else False) # checking if any of the tads overlap
 
 
@@ -168,9 +168,9 @@ input_data['same_cancer_tad'] = input_data['tad_name'].apply(lambda x: True if l
 
 
 
-####################################### Calculating gene density for MEIs associated tad region #####################################################
+####################################### Calculating gene density for variants associated tad region #####################################################
 
-logger.info('getting gene density for MEIs associated TAD domain')
+logger.info('getting gene density for variants associated TAD domain')
 
 input_data['gene_density'] = input_data['tad_name'].apply(lambda x: calculate_gene_density(x, gene_density))
 
@@ -180,7 +180,7 @@ input_data['gene_density'] = input_data['tad_name'].apply(lambda x: calculate_ge
 
 
 
-####################################### Getting hic-promoter interaction information for MEIs ##################################################
+####################################### Getting hic-promoter interaction information for variants ##################################################
 
 
 logger.info('running bedtools to get the information regarding overlap with hic-promoter interaction region')
@@ -190,7 +190,7 @@ mei_hic_promoter = pd.read_csv(dir_+'/mei_promoter_interaction.bed',sep='\t', he
 mei_hic_promoter.columns = ['chr','start','end','snp','hic_chr','hic_start','hic_end','hic_interacted_gene', 'overlap']
 mei_hic_promoter = mei_hic_promoter.drop_duplicates()
 
-logger.info('checking if the interacted gene and MEIs are in same TAD domain')
+logger.info('checking if the interacted gene and variants are in same TAD domain')
 mei_hic_promoter['common_tad'] = mei_hic_promoter.apply(lambda x: check_tad(x.snp, x.hic_interacted_gene, mei_tad, genes_tad), axis=1)
 
 #mei_hic_promoter = mei_hic_promoter[mei_hic_promoter['common_tad']==0] #removed same tad interaction
@@ -223,13 +223,13 @@ logger.info('running bedtools to get the information regarding overlap with hete
 os.system('bedtools intersect -a {}/sorted_mei_coordinates.bed -b {} -wb > {}/mei_h3k27me3.bed'.format(dir_,args.repressive_region,dir_))
 
 heterochromatin = pd.read_csv(dir_+'/mei_h3k27me3.bed',sep='\t', header=None)
-heterochromatin_region = heterochromatin.iloc[:,3].tolist() # MEIs id overlapping with repressive region
+heterochromatin_region = heterochromatin.iloc[:,3].tolist() # variants id overlapping with repressive region
 
 all_data['repressive_region'] = all_data['id'].apply(lambda x: check_active_status(x, heterochromatin_region))
 
 
 
-logger.info('checking for MEIs with nearby oncogenes or tumor repressor genes')
+logger.info('checking for variants with nearby oncogenes or tumor repressor genes')
 
 #print(filter7.head())
 all_data['nearby_cancer_genes'] = all_data['id'].apply(lambda x: filter_nearby_cancer_genes(x, mei_nearby_cancer_list))
@@ -292,11 +292,11 @@ else:
 if args.eqtl_genes != False:
 	all_data['eQTL_test'] = all_data['eqtl'].apply(lambda x: filter_tumor_repressor_genes(x.split(','), tumor_repressor_genes_list))
 
-	eqtl_passed_MEIs = all_data[all_data['eQTL_test']==False]['id'].tolist()
-	#print(eqtl_passed_MEIs)
+	eqtl_passed_variants = all_data[all_data['eQTL_test']==False]['id'].tolist()
+	#print(eqtl_passed_variants)
 
-	logger.info('keeping only those MEIs if EQTL gene is not tumor repressor or oncogenes')
-	filtered_data = filtered_data[filtered_data['id'].isin(eqtl_passed_MEIs)]
+	logger.info('keeping only those variants if EQTL gene is not tumor repressor or oncogenes')
+	filtered_data = filtered_data[filtered_data['id'].isin(eqtl_passed_variants)]
 
 
 
@@ -304,10 +304,10 @@ if args.eqtl_genes != False:
 ######################################### Filteration steps: applying all remaining filters ############################
 
 
-logger.info('removing MEIs in same TAD domain as tumor repressor or oncogenes')
-logger.info('removing MEIs with TAD domain having gene density < {}'.format(gd))
-logger.info('removing MEIs interacting with dosage sensitive genes or tumor repressor or oncogenes or any interaction with genes in same tad domain')
-logger.info('removing MEIs with nearby tumor repressor or oncogenes')
+logger.info('removing variants in same TAD domain as tumor repressor or oncogenes')
+logger.info('removing variants with TAD domain having gene density < {}'.format(gd))
+logger.info('removing variants interacting with dosage sensitive genes or tumor repressor or oncogenes or any interaction with genes in same tad domain')
+logger.info('removing variants with nearby tumor repressor or oncogenes')
 
 filtered_data = filtered_data[(filtered_data['same_cancer_tad']==False)&(filtered_data['gene_density']<gd)&(filtered_data['dosage_sensitive_interaction']==0)&(filtered_data['repressive_region']==False)&(filtered_data['nearby_cancer_genes']==False)&(filtered_data['common_tad_count']==0)&(filtered_data['hic_interacted_gene_test']==False)]
 
