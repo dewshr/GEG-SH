@@ -25,10 +25,11 @@ The script allows filtering of the given different variants on different paramet
 Before running the program user has to install all the required dependencies. User can follow either of following steps for that purpose:
 - **Using Conda :** User can use ***environment.yml*** using conda to create a new environment with required dependensies. If you have conda installed, following code can be used to create separate environment with the dependencies installed:
 
-`conda env create -f environment.yml`
+    `conda env create -f environment.yml`
 
 After this you can activate the created environment using following command:
-`conda activate safe_harbor`
+
+    `conda activate safe_harbor`
 
   If user does not have conda installed. You can download either of it from the link below:
   - [anaconda](https://www.anaconda.com/distribution/)
