@@ -18,12 +18,13 @@ The script allows filtering of the given different variants on different paramet
 <br/>
 
 ## 1) Prerequisites
-> **_NOTE_** If you decide to use conda you have to add **bioconda channel** to your conda. You can do that by `conda config --add channels bioconda`.
+> **_NOTE:_** If you decide to use conda you have to add **bioconda channel** to your conda. You can do that by: `conda config --add channels bioconda`.
 
 <br/>
 
 Before running the program user has to install all the required dependencies. User can follow either of following steps for that purpose:
 - **Using Conda :** User can use ***environment.yml*** using conda to create a new environment with required dependensies. If you have conda installed, following code can be used to create separate environment with the dependencies installed:
+
 `conda env create -f environment.yml`
 
 After this you can activate the created environment using following command:
@@ -50,7 +51,7 @@ The input file should be in tab delimited format. The minimum requirement for th
 
 <br/>
 
-> **_NOTE_** The column name has to be same. The names can be upper or lower case.
+> **_NOTE:_** The column name has to be same. The names can be upper or lower case.
 
 <br/>
 
