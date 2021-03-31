@@ -41,7 +41,7 @@ The input file should be in tab delimited format. The minimum requirement for th
 
 <br/>
 
-> **_NOTE_** The column name has to be in same exact format but no particular order.
+> **_NOTE_** The column name has to be same. The names can be upper or lower case.
 
 <br/>
 
@@ -133,7 +133,7 @@ Here is the description of the different parameters:
 
 <br/>
 
-## 3) Data Description
+## 4) Data Description
 - ***merged_gm12878.bed :*** This is the TAD domain file. It is downloaded from [Rao et al, Cell, 2014](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE63525)
 
 - ***oncogenes_and_tumor_repressor_genes.bed :*** This is the list of tumor repressors and oncogenes downloaded from [tumor repressor link](https://bioinfo.uth.edu/TSGene/?csrt=14252334967482590952) and [oncogenes link](http://ongene.bioinfo-minzhao.org)
