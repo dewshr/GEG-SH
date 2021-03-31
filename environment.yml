@@ -1,6 +1,7 @@
 name: safe_harbor
 channels:
  - conda-forge
+ - bioconda
  - defaults
 dependencies:
  - python=3.6.8
