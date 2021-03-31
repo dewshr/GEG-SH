@@ -133,7 +133,7 @@ input_data.loc[:,['chr','extended_start','extended_stop','id']].to_csv(os.path.j
 logger.info('looking for nearby tumor repressor or oncogenes')
 os.system('bedtools intersect -a {}/sorted_extended_variant_coordinates.bed -b ./data/oncogenes_and_tumor_repressor_genes.bed -wb > {}/oncogenic_tumor_repressor_variant.bed'.format(dir_,dir_))
 
-variant_nearby_cancer = pd.read_csv('results/oncogenic_tumor_repressor_variant.bed', header=None, sep='\t')
+variant_nearby_cancer = pd.read_csv('{}/oncogenic_tumor_repressor_variant.bed'.format(dir_), header=None, sep='\t')
 variant_nearby_cancer.columns = ['chr','start','stop','id','c_chr','c_start','c_stop','genes','gene_id']
 variant_nearby_cancer_list = variant_nearby_cancer['id'].tolist()
 
