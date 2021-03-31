@@ -19,7 +19,8 @@ parser.add_argument('-rr', '--repressive_region', default ='./data/blood_repress
 parser.add_argument('-ar', '--active_region', default = None, help ='bed file containing regions with active transcription mark')
 parser.add_argument('-gd', '--gene_density', default = None, help='gene density in the tad domains, mean gene density will be used as default')
 parser.add_argument('-o', '--output', default='./results', help ='ouput folder name')
-parser.add_argument('-af', '--allele_freq', default = None, help ='threshold allele frequency of the snp to filter')
+parser.add_argument('-af1', '--allele_freq1', default = None, help ='lower limit threshold of allele frequency')
+parser.add_argument('-af2', '--allele_freq2', default = 0.9, help ='upper limit threshold of allele frequency')
 parser.add_argument('-hic', '--hic_interaction', default = './data/blood_hic_interaction.bed', help='hic-promoter interaction bed file')
 parser.add_argument('-l', '--nearby_cancer_genes', default = 50000, help='any variant with oncogenes or tumor repressor genes 50kb upstream or downstream will be removed')
 parser.add_argument('-fname','--file_name', default='result.csv', help='output file name')
@@ -277,11 +278,11 @@ else:
 
 ########################################### Filtering by allele frequency and eQTL genes if provided###############
 
-if args.allele_freq != None:
+if args.allele_freq1 != None:
 	logger.info('filtering by allele frequency > {}'.format(args.allele_freq))
 	#filter5 = filter4[filter4['AF'] > float(args.allele_freq)]
 	all_data['af'] = all_data['af'].apply(lambda x: get_round_value(x))
-	filtered_data = filtered_data[filtered_data['af']> float(args.allele_freq)]
+	filtered_data = filtered_data[(filtered_data['af']> float(args.allele_freq1))&(filtered_data['af']< float(args.allele_freq2))]
 	#logger.info('filter5 shape (after removing ME with AF) > {} : {}'.format(args.allele_freq, filter5.shape))
 else:
 	if 'af' in columns:
