@@ -88,12 +88,14 @@ optional arguments:
                         will be used as default
   -o OUTPUT, --output OUTPUT
                         ouput folder name
-  -af ALLELE_FREQ, --allele_freq ALLELE_FREQ
-                        threshold allele frequency of the snp to filter
+  -af1 ALLELE_FREQ1, --allele_freq1 ALLELE_FREQ1
+                        lower limit threshold of allele frequency
+  -af2 ALLELE_FREQ2, --allele_freq2 ALLELE_FREQ2
+                        upper limit threshold of allele frequency
   -hic HIC_INTERACTION, --hic_interaction HIC_INTERACTION
-                        hic-promoter interaction bed file
+                        chromatin interaction bed file
   -l NEARBY_CANCER_GENES, --nearby_cancer_genes NEARBY_CANCER_GENES
-                        any MEI with oncogenes or tumor repressor genes 50kb
+                        any variant with oncogenes or tumor repressor genes in 50kb
                         upstream or downstream will be removed
   -fname FILE_NAME, --file_name FILE_NAME
                         output file name
@@ -123,7 +125,10 @@ Here is the description of the different parameters:
 - **output** : this parameter takes output folder name. **results** is used as default folder name.
 <br/>
 
-- **allele_frequency** : this parameter is used to filter the column AF, keeping all those variants with AF > threshold. If the input file doesn't have this column, no need to use this parameter, otherwise it will give an error. But if the input file has AF, but this parameter is not passed, then AF column will be ignored and would not be considered for filtration steps.
+- **allele_freq1** : this parameter takes the lower limit threshold value for allele frequency.It is used to filter the column AF, keeping all those variants with AF > threshold. If the input file doesn't have this column, no need to use this parameter, otherwise it will give an error. But if the input file has AF, but this parameter is not passed, then AF column will be ignored and would not be considered for filtration steps.
+<br/>
+
+- **allele_freq2** : this prameter takes upper limit threshold value for allele frequency. The default value is set to 0.9. The reason for lower and upper limit allele frequecy threhsold is to filter out only the common varaints, excluding the rare variants. ***allele_freq1*** has to be passed to use this parameter.
 <br/>
 
 - **hic_interaction** : this parameter takes the chromatin interaction file. The file should have 4 columns: `chr, start, stop and gene`. This file is used to check if any of the variant involved interaction involve tumor repressor or oncogenes and dosage sensitive genes.
