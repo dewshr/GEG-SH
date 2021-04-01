@@ -36,7 +36,7 @@ After this you can activate the created environment using following command:
   - [miniconda](https://docs.conda.io/en/latest/miniconda.html)
 
 - **Using pip :** The user have to install all the dependensies one by one using ***pip***. Here are the commands for installation:
-  - `pip install pandas`
+  - `pip install pandas==1.2.3`
   - `pip install loguru` 
   
   **bedtools** can not be installed using **pip**, you can follow the steps [here](https://bedtools.readthedocs.io/en/latest/content/installation.html)
