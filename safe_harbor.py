@@ -21,7 +21,7 @@ parser.add_argument('-gd', '--gene_density', default = None, help='gene density 
 parser.add_argument('-o', '--output', default='./results', help ='ouput folder name')
 parser.add_argument('-af1', '--allele_freq1', default = None, help ='lower limit threshold of allele frequency')
 parser.add_argument('-af2', '--allele_freq2', default = 0.9, help ='upper limit threshold of allele frequency')
-parser.add_argument('-hic', '--hic_interaction', default = './data/blood_hic_interaction.bed', help='hic-promoter interaction bed file')
+parser.add_argument('-hic', '--hic_interaction', default = './data/blood_hic_interaction.bed', help='chromatin interaction bed file')
 parser.add_argument('-l', '--nearby_cancer_genes', default = 50000, help='any variant with oncogenes or tumor repressor genes 50kb upstream or downstream will be removed')
 parser.add_argument('-fname','--file_name', default='result.csv', help='output file name')
 
