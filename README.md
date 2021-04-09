@@ -27,13 +27,15 @@ Before running the program user has to install all the required dependencies. Us
 
     `conda env create -f environment.yml`
 
-After this you can activate the created environment using following command:
+    After this you can activate the created environment using following command:
 
     `conda activate safe_harbor`
 
-  If user does not have conda installed. You can download either of it from the link below:
-  - [anaconda](https://www.anaconda.com/distribution/)
-  - [miniconda](https://docs.conda.io/en/latest/miniconda.html)
+    If user does not have conda installed. You can download either of it from the link below:
+    - [anaconda](https://www.anaconda.com/distribution/)
+    - [miniconda](https://docs.conda.io/en/latest/miniconda.html)
+
+<br/>
 
 - **Using pip :** The user have to install all the dependensies one by one using ***pip***. Here are the commands for installation:
   - `pip install pandas==1.2.3`
