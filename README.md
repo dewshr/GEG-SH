@@ -90,10 +90,8 @@ optional arguments:
                         will be used as default
   -o OUTPUT, --output OUTPUT
                         ouput folder name
-  -af1 ALLELE_FREQ1, --allele_freq1 ALLELE_FREQ1
+  -af ALLELE_FREQ, --allele_freq ALLELE_FREQ
                         lower limit threshold of allele frequency
-  -af2 ALLELE_FREQ2, --allele_freq2 ALLELE_FREQ2
-                        upper limit threshold of allele frequency
   -hic HIC_INTERACTION, --hic_interaction HIC_INTERACTION
                         chromatin interaction bed file
   -l NEARBY_CANCER_GENES, --nearby_cancer_genes NEARBY_CANCER_GENES
@@ -127,10 +125,7 @@ Here is the description of the different parameters:
 - **output** : this parameter takes output folder name. **results** is used as default folder name.
 <br/>
 
-- **allele_freq1** : this parameter takes the lower limit threshold value for allele frequency.It is used to filter the column AF, keeping all those variants with AF > threshold. If the input file doesn't have this column, no need to use this parameter, otherwise it will give an error. But if the input file has AF, but this parameter is not passed, then AF column will be ignored and would not be considered for filtration steps.
-<br/>
-
-- **allele_freq2** : this prameter takes upper limit threshold value for allele frequency. The default value is set to 0.9. The reason for lower and upper limit allele frequecy threhsold is to filter out only the common varaints, excluding the rare variants. ***allele_freq1*** has to be passed to use this parameter.
+- **allele_freq** : this parameter takes the threshold value used for filtering based on allele frequency of certain variant. The value provided will be considered as lower limit threshold and upper limit threshold will be calculated based on given value as `1-af`, keeping all those variants with AF > threshold and AF < 1- threshold . If the input file doesn't have this column, no need to use this parameter, otherwise it will give an error. But if the input file has AF, but this parameter is not passed, then AF column will be ignored and would not be considered for filtration steps.
 <br/>
 
 - **hic_interaction** : this parameter takes the chromatin interaction file. The file should have 4 columns: `chr, start, stop and gene`. This file is used to check if any of the variant involved interaction involve tumor repressor or oncogenes and dosage sensitive genes.
