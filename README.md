@@ -11,19 +11,20 @@ The script allows filtering of the given different variants on different paramet
 - [Prerequisites](#1-prerequisites)
 - [Input file format](#2-input-file-format)
 - [Running the program](#3-running-the-program)
-- [Data Description](#4-data-description)
+- [Output file description](#4-output-file-description)
+- [Data Description](#5-data-description)
 
 <br/>
 
 <br/>
 
 ## 1) Prerequisites
-> **_NOTE:_** If you decide to use conda you have to add **bioconda channel** to your conda. You can do that by: `conda config --add channels bioconda`.
+> **_NOTE:_** After installation of conda you have to add **bioconda channel** to your conda. You can do that by: `conda config --add channels bioconda`.
 
 <br/>
 
-Before running the program user has to install all the required dependencies. User can follow either of following steps for that purpose:
-- **Using Conda :** User can use ***environment.yml*** using conda to create a new environment with required dependensies. If you have conda installed, following code can be used to create separate environment with the dependencies installed:
+Before running the program user has to install all the required dependencies. User can follow either following steps for that purpose:
+User can use ***environment.yml*** using conda to create a new environment with required dependensies. If you have conda installed, following code can be used to create separate environment with the dependencies installed:
 
     `conda env create -f environment.yml`
 
@@ -31,17 +32,10 @@ Before running the program user has to install all the required dependencies. Us
 
     `conda activate safe_harbor`
 
-    If user does not have conda installed. You can download either of it from the link below:
-    - [anaconda](https://www.anaconda.com/distribution/)
-    - [miniconda](https://docs.conda.io/en/latest/miniconda.html)
+   If user does not have conda installed. You can download either of it from the link below:
+   - [anaconda](https://www.anaconda.com/distribution/)
+   - [miniconda](https://docs.conda.io/en/latest/miniconda.html)
 
-<br/>
-
-- **Using pip :** The user have to install all the dependensies one by one using ***pip***. Here are the commands for installation:
-  - `pip install pandas==1.2.3`
-  - `pip install loguru` 
-  
-  **bedtools** can not be installed using **pip**, you can follow the steps [here](https://bedtools.readthedocs.io/en/latest/content/installation.html)
 <br/>
 
 <br/>
@@ -146,10 +140,41 @@ Here is the description of the different parameters:
 
 <br/>
 
-## 4) Data Description
-- ***merged_gm12878.bed :*** This is the TAD domain file. It is downloaded from [Rao et al, Cell, 2014](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE63525)
+## 4) Output file Description
 
-- ***oncogenes_and_tumor_repressor_genes.bed :*** This is the list of tumor repressors and oncogenes downloaded from [tumor repressor link](https://bioinfo.uth.edu/TSGene/?csrt=14252334967482590952) and [oncogenes link](http://ongene.bioinfo-minzhao.org)
+|Column name|	Description|
+|-----------|--------------|
+|id|	unique variant id|
+|position|	chromosome coordinates for the variant|
+|fdr|	false discovery rate|
+|af|	population allele frequency|
+|chr|	chromosome number of variant|
+|start|	chromosome start position|
+|stop|	chromosome end position|
+|extended_start|	upstream extension of start, based on the extension parameter, by default it is extended by 50 kb|
+|extended_stop|	downstream extension of stop, based on the extension parameter, by default it is extended by 50 kb|
+|tad_name|	tad domain associated with the variant|
+|same_cancer_tad|	represents boolean value, True if variant and cancer genes or tumor repressor genes are in same TAD, else represented as False|
+|gene_density (genes per million tad)|	number of genes per mb tad|
+|hic_interacted_genes|	genes interacting with the variant associated locus|
+|common_tad_count|	common TAD between the variant and the interacted genes|
+|dosage_sensitive interactions|	number of interactions with dosage sentive genes|
+|hic_interacted_genes (oncogenic or tumor repressor)|	boolean value representing if the interaction with genes comprises any oncogenic or tumor repressor genes|
+|repressive_region|	boolean value representing if the variant overlaps with the repressive region or not|
+|nearby_cancer_genes (x kb)|	boolean value representing if there is present of oncogenic or tumor repressor genes based on the user provided distance, default value is 50 kb||
+|nearby_cancer_genes_names|	oncogenic or tumor repressor genes with in user provided distance|
+|active region|	boolean value representing if the variant overlaps with the active chromatin region or not|
+|passed_all_filter|	represents boolean value, True if the variant passes all the filters used, else represented as False||
+|ucsc_link|	UCSC browser link to the variant position|
+
+<br/>
+
+<br/>
+
+## 5) Data Description
+- ***merged_gm12878.bed :*** This is the TAD domain file. It is downloaded from [Rao et al, Cell, 2014](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE63525). ***GSE63525_GM12878_primary+replicate_Arrowhead_domainlist.txt** is further processed to generate bed file with **chr, start, stop and length** of TAD domain. ***bedtools merge*** is then applied to the generated bed file. Bed file should be sorted before applying bedtools merge.
+
+- ***oncogenes_and_tumor_repressor_genes.bed :*** This is the list of [tumor repressors genes](https://bioinfo.uth.edu/TSGene/?csrt=14252334967482590952) and [oncogenes](http://ongene.bioinfo-minzhao.org) downloaded from [Zhao et al, Nucleic Acids Research, 2015](https://academic.oup.com/nar/article/44/D1/D1023/2503080) and [Liu et al, Journal of Genetics and Genomics, 2017](https://www.sciencedirect.com/science/article/pii/S1673852716302053?via%3Dihub) respectively.
 
 - ***blood_hic_interaction.bed :*** This file list chromatin interactions involving different blood cells. It is downloaded from (Javierre et al, Cell, 2016)[https://pubmed.ncbi.nlm.nih.gov/27863249/]
 
@@ -161,6 +186,6 @@ Here is the description of the different parameters:
 
 - ***blood_active_transcription_marks :*** This contains the chromatin regions that are assigned to be active in nature based on ChromHMM. The files associated with **blood** are filtered using column **ANATOMY** from [Roadmap, 2013](https://docs.google.com/spreadsheets/d/1yikGx4MsO9Ei36b64yOy9Vb6oPC5IBGlFbYEt-N6gOM/edit#gid=15), and then regions labelled as `TssA, TssAFlnk, Tx, TxWk` were extracted.
 
-- ***genes_tad.bed :*** This file provides the TAD domain information for the genes in **sorted_gene_annotation.bed**. The file is generated using [bedtools intersect](https://bedtools.readthedocs.io/en/latest/content/tools/intersect.html).
+- ***genes_tad.bed :*** This file provides the TAD domain information for the genes in **sorted_gene_annotation.bed**. The file is generated using [bedtools intersect](https://bedtools.readthedocs.io/en/latest/content/tools/intersect.html) on the TAD domain file downloaded from ***Rao et al, Cell, 2014*** and gene annotation file from ***Ensembl Biomart hg19***. If the user provides own tad domain file, new file will be generated, else this file will be used as default.
 
 - ***gene_density_all_tad.csv :*** This is the pre-calculated gene density information for the TAD domains in **merged_gm12878.bed**. This file is generated using **genes_tad.bed**.
