@@ -16,7 +16,7 @@ parser.add_argument('-t','--thresh', default = None, help= 'fdr threshold to fil
 parser.add_argument('-eqtl','--eqtl_genes', default = False, help= 'eQTL genes')
 parser.add_argument('-tad', '--tad_domain', default = None, help='custom tad domain file, else will use default file provided')
 parser.add_argument('-rr', '--repressive_region', default ='./data/blood_repressive_marks.bed', help ='bed file containing regions with repressive mark')
-parser.add_argument('-ar', '--active_region', default = None, help ='bed file containing regions with active transcription mark')
+parser.add_argument('-ar', '--active_region', default = './data/blood_active_transcription_marks.bed', help ='bed file containing regions with active transcription mark')
 parser.add_argument('-gd', '--gene_density', default = None, help='gene density in the tad domains, mean gene density will be used as default')
 parser.add_argument('-o', '--output', default='./results', help ='ouput folder name')
 parser.add_argument('-af', '--allele_freq', default = None, help ='allele frequency threshold for the variant')
@@ -31,9 +31,13 @@ args = parser.parse_args()
 if not os.path.exists(args.output):
 	os.makedirs(os.path.join(args.output, 'temp_files'))
 
+
 logger_path = os.path.abspath(args.output)
 logger.add(logger_path+'/variant_filter{time}.log', rotation='10 MB')
 logger.level("WARNING", color="<bold><red>")
+
+logger.info('COMMAND USED:\npython ' + ' '.join(sys.argv) +'\n')
+#sys.exit()
 
 dir_ = os.path.abspath(args.output) 
 
@@ -44,6 +48,16 @@ if args.input == None:
 	sys.exit(1)
 
 dist = int(args.nearby_cancer_genes)/1000
+
+info = "\n\nParameter information:\n\n" + "FDR threshold:\t{}\n".format(args.thresh) + "Variant Allele frequency:\t{}\n".format(args.allele_freq)
+
+if args.tad_domain == None:
+	info = info + "tad domain file used:\t{}\n".format('./data/merged_gm12878.bed')
+else:
+	info = info + "tad domain file used:\t{}\n".format(args.tad_domain)
+
+info = info + "Repressive region:\t{}\n".format(args.repressive_region) + "Active region:\t{}\n".format(args.active_region) + "Chromatin interaction data:\t{}\n".format(args.hic_interaction)
+
 
 
 # tumor repressor and oncogenes list
@@ -105,6 +119,12 @@ if args.gene_density == None:
 	gd = round(np.mean(gene_density.density),2)
 else:
 	gd = float(args.gene_density)
+
+
+info = info + "Nearby cancer gene distance:\t{}kb\n".format(dist) + "Gene density:\t{}, this value represents mean value if user parameter is None\n".format(gd)
+info = info + "eQTL genes info in input file:\t{}\n".format(args.eqtl_genes) + "Output folder:\t{}\n".format(args.output) + "Output filename:\t{}\n".format(args.file_name)
+
+logger.info(info)
 
 
 
@@ -238,14 +258,11 @@ all_data['nearby_cancer_gene_names'] = all_data['id'].apply(lambda x: get_nearby
 
 	
 
-######################################## Checking for active chromatin region and nearby genes ########################
+######################################## Checking for active chromatin region ########################
 
-if args.active_region != None:
-	logger.info('running bedtools to get the information regarding overlap with active transcription region')
-	os.system('bedtools intersect -a {}/sorted_variant_coordinates.bed -b {} -wb > {}/variant_active.bed'.format(dir_,args.active_region,dir_))
-else:
-	logger.info('running bedtools to get the information regarding overlap with active transcription region using default file "blood_active_transcription_marks.bed".')
-	os.system('bedtools intersect -a {}/sorted_variant_coordinates.bed -b  ./data/blood_active_transcription_marks.bed -wb > {}/variant_active.bed'.format(dir_,dir_))
+logger.info('running bedtools to get the information regarding overlap with active transcription region')
+os.system('bedtools intersect -a {}/sorted_variant_coordinates.bed -b {} -wb > {}/variant_active.bed'.format(dir_,args.active_region,dir_))
+
 
 active_region = pd.read_csv(dir_+'/variant_active.bed',sep='\t', header=None)
 active_region_list = active_region.iloc[:,3].tolist()
@@ -262,7 +279,7 @@ all_data['active_region'] = all_data['id'].apply(lambda x: check_active_status(x
 if args.thresh != None:
 	logger.info('filtering by FDR > {}'.format(args.thresh))
 
-	all_data['fdr_test'] = all_data['fdr'].apply(lambda x: fdr_filter(str(x).split(','), args.thresh))
+	all_data['fdr_test'] = all_data['fdr'].apply(lambda x: fdr_filter(str(x).replace(' ','').split(','), args.thresh))
 	#logger.info('filter6 shape (after removing ME with FDR) > {} : {}'.format(args.thresh, filter6.shape))
 	filtered_data = all_data[all_data['fdr_test']== True]
 else:
@@ -290,7 +307,7 @@ else:
 
 
 if args.eqtl_genes != False:
-	all_data['eQTL_test'] = all_data['eqtl'].apply(lambda x: filter_tumor_repressor_genes(x.split(','), tumor_repressor_genes_list))
+	all_data['eQTL_test'] = all_data['eqtl'].apply(lambda x: filter_tumor_repressor_genes(x.replace(' ','').split(','), tumor_repressor_genes_list))
 
 	eqtl_passed_variants = all_data[all_data['eQTL_test']==False]['id'].tolist()
 	#print(eqtl_passed_variants)
@@ -334,7 +351,6 @@ logger.success('\n\nThe total number of variant id after removing dosage sensiti
 
 try:
 	os.system('mv {}/*.bed {}/temp_files/'.format(dir_, dir_))
-	os.system('mv {}/*.log {}/temp_files/'.format(dir_, dir_))
 except IOError:
 	logger.info('either bed files or log files are not found, please check the folder again')
 
