@@ -149,3 +149,14 @@ def get_nearby_genes(x, mei_nearby_cancer):
 		return ''
 
 
+######################## checking if the variant position overlaps with blacklisted position ######################
+@logger.catch
+def tag_blacklist_region(x, blacklist_region_list):
+	if x in blacklist_region:
+		return True
+	else:
+		return False
+
+
+
+

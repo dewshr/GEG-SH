@@ -19,6 +19,7 @@ parser.add_argument('-rr', '--repressive_region', default ='./data/blood_repress
 parser.add_argument('-ar', '--active_region', default = './data/blood_active_transcription_marks.bed', help ='bed file containing regions with active transcription mark')
 parser.add_argument('-gd', '--gene_density', default = None, help='gene density in the tad domains, mean gene density will be used as default')
 parser.add_argument('-o', '--output', default='./results', help ='ouput folder name')
+parser.add_argument('-br','--blacklist_region', default =None, help='bed file with the coordinates that the user does not want to include in output')
 parser.add_argument('-af', '--allele_freq', default = None, help ='allele frequency threshold for the variant')
 parser.add_argument('-hic', '--hic_interaction', default = './data/blood_hic_interaction.bed', help='chromatin interaction bed file')
 parser.add_argument('-l', '--nearby_cancer_genes', default = 50000, help='any variant with oncogenes or tumor repressor genes 50kb upstream or downstream will be removed')
@@ -316,7 +317,23 @@ if args.eqtl_genes != False:
 	filtered_data = filtered_data[filtered_data['id'].isin(eqtl_passed_variants)]
 
 
+######################################### removing variants overlapping with the blacklist region provided by the user ###############################
 
+if args.blacklist_region != None:
+	os.system('bedtools intersect -a {}/sorted_variant_coordinates.bed -b {}  -wa > {}/variant_blacklist_overlap.bed'.format(dir_, args.blacklist_region, dir_))
+
+	blacklist_region = pd.read_csv(dir_+ '/variant_blacklist_overlap.bed', sep='\t', header=None)
+	blacklist_region_list = blacklist_region[3].tolist()
+	
+	logger.info('tagging variants if they overlap with blacklisted region')
+	all_data['blacklist_region'] = all_data['id'].apply(lambda x: tag_blacklist_region(x, blacklist_region_list))
+
+	non_blacklisted_ids = all_data[all_data['blacklist_region']==False]['id'].tolist()
+
+	logger.info('removing any variants overlapping with blacklisted region')
+	filtered_data = filtered_data[filtered_data['id'].isin(non_blacklisted_ids)]
+
+	
 
 ######################################### Filteration steps: applying all remaining filters ############################
 
@@ -352,7 +369,7 @@ logger.success('\n\nThe total number of variant id after removing dosage sensiti
 try:
 	os.system('mv {}/*.bed {}/temp_files/'.format(dir_, dir_))
 except IOError:
-	logger.info('either bed files or log files are not found, please check the folder again')
+	logger.info('no bed files found to move to temp folder, please check the folder again')
 
 
 
