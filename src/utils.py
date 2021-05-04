@@ -69,13 +69,12 @@ def check_tad(snp, gene, mei_tad, genes_tad):
 	#print(x['snp'])
 	#print(genes_tad.head())
 	try:
-		#print(x['snp'])
 		snp_tad = mei_tad[mei_tad.index == snp]['tad_name'].tolist()[0]
 	except:
 		return 0
 		
 	try:
-		gene_tad = genes_tad[genes_tad['gene']== gene]['name'].tolist()[0]
+		gene_tad = genes_tad[genes_tad.index== gene]['name'].tolist()[0]
 
 	except:
 		return 0

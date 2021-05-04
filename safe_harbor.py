@@ -213,6 +213,7 @@ variant_hic_promoter = variant_hic_promoter.drop_duplicates()
 
 logger.info('checking if the interacted gene and variants are in same TAD domain')
 variant_hic_promoter['common_tad'] = variant_hic_promoter.apply(lambda x: check_tad(x.snp, x.hic_interacted_gene, variant_tad, genes_tad), axis=1)
+#variant_hic_promoter.to_csv('./results/temp_variant_tad_count.csv')
 
 #variant_hic_promoter = variant_hic_promoter[variant_hic_promoter['common_tad']==0] #removed same tad interaction
 
