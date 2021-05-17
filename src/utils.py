@@ -1,4 +1,5 @@
 from loguru import logger
+import pandas as pd
 
 
 ########################## function to calculate the gene density in a given tad domain ######
@@ -86,14 +87,18 @@ def check_tad(snp, gene, mei_tad, genes_tad):
 	
 
 
-###################### function to check if ME lies in active chromatin region ######
-@logger.catch
-def check_active_status(x, active_region_list):
-	#print(x.name)
-	if x in active_region_list:
-		return True
+
+##################### function to scan for repressive and active chromatin region ############
+def check_chromatin_status(x, chromatin_region_df):
+	try:
+		val = chromatin_region_df[chromatin_region_df.index==x]['state'][0]
+	except:
+		val = 'None'
+
+	if val != 'None':
+		return pd.Series([True, val])
 	else:
-		return False
+		return pd.Series([False, val])
 
 
 

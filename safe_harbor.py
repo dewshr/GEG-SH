@@ -237,19 +237,22 @@ all_data['hic_interacted_gene_test'] = all_data['hic_interacted_gene'].apply(lam
 
 
 
-
-######################################## Checking for heterochromatin region and nearby genes ########################
-
-
-logger.info('running bedtools to get the information regarding overlap with heterochromatin region')
-os.system('bedtools intersect -a {}/sorted_variant_coordinates.bed -b {} -wb > {}/variant_h3k27me3.bed'.format(dir_,args.repressive_region,dir_))
-
-heterochromatin = pd.read_csv(dir_+'/variant_h3k27me3.bed',sep='\t', header=None)
-heterochromatin_region = heterochromatin.iloc[:,3].tolist() # variants id overlapping with repressive region
-
-all_data['repressive_region'] = all_data['id'].apply(lambda x: check_active_status(x, heterochromatin_region))
+######################################## Checking for repressive region and nearby genes ########################
 
 
+logger.info('running bedtools to get the information regarding overlap with repressive region')
+os.system('bedtools intersect -a {}/sorted_variant_coordinates.bed -b {} -wo > {}/variant_repressive_marks.bed'.format(dir_,args.repressive_region,dir_))
+
+#repressive_marks = pd.read_csv(dir_+'/variant_repressive_marks.bed',sep='\t', header=None)
+#repressive_marks_list = repressive_marks.iloc[:,3].tolist() # variants id overlapping with repressive region
+
+#all_data['repressive_region'] = all_data['id'].apply(lambda x: check_active_status(x, repressive_marks_list))
+
+variant_repressive = pd.read_csv(dir_+'/variant_repressive_marks.bed', sep='\t', header=None).iloc[:,[3,7]]
+variant_repressive.columns = ['id', 'state']
+variant_repressive = variant_repressive.groupby('id').agg(lambda x : ','.join(list(set(list(x)))))
+
+all_data[['repressive_region', 'repressive_region_info']] = all_data['id'].apply(lambda x: check_chromatin_status(x, variant_repressive))
 
 logger.info('checking for variants with nearby oncogenes or tumor repressor genes')
 
@@ -263,17 +266,23 @@ all_data['nearby_cancer_gene_names'] = all_data['id'].apply(lambda x: get_nearby
 ######################################## Checking for active chromatin region ########################
 
 logger.info('running bedtools to get the information regarding overlap with active transcription region')
-os.system('bedtools intersect -a {}/sorted_variant_coordinates.bed -b {} -wb > {}/variant_active.bed'.format(dir_,args.active_region,dir_))
+os.system('bedtools intersect -a {}/sorted_variant_coordinates.bed -b {} -wo > {}/variant_active.bed'.format(dir_,args.active_region,dir_))
 
 
-active_region = pd.read_csv(dir_+'/variant_active.bed',sep='\t', header=None)
-active_region_list = active_region.iloc[:,3].tolist()
+#active_region = pd.read_csv(dir_+'/variant_active.bed',sep='\t', header=None)
+#active_region_list = active_region.iloc[:,3].tolist()
 
 logger.info('tagging ME overlapping with active chromatin region as True')
 #filter7['active_region'] = filter7['id'].apply(lambda x: check_active_status(x, active_region_list))
-all_data['active_region'] = all_data['id'].apply(lambda x: check_active_status(x, active_region_list))
+#all_data['active_region'] = all_data['id'].apply(lambda x: check_active_status(x, active_region_list))
 
 
+
+active_region = pd.read_csv(dir_+'/variant_active.bed', sep='\t', header=None).iloc[:,[3,7]]
+active_region.columns = ['id', 'state']
+active_region = active_region.groupby('id').agg(lambda x : ','.join(list(set(list(x)))))
+
+all_data[['active_region', 'active_region_info']] = all_data['id'].apply(lambda x: check_chromatin_status(x, active_region))
 
 
 
@@ -355,13 +364,13 @@ filtered_data = filtered_data[(filtered_data['same_cancer_tad']==False)&(filtere
 
 logger.info('generating output files....')
 filtered_data['ucsc_link'] = 'http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position='+filtered_data['position'].map(str)
-filtered_data.loc[:,['id','position','ucsc_link']].to_csv(dir_+'/filtered_'+args.file_name, index=False)
+filtered_data.loc[:,['id','position','active_region','active_region_info','ucsc_link']].to_csv(dir_+'/filtered_'+args.file_name, index=False)
 
 all_data['passed_all_filter'] = all_data['id'].apply(lambda x: check_final_list(x, filtered_data['id'].tolist()))
 all_data['tad_name'] = all_data['tad_name'].apply(lambda x: ','.join(x))
 all_data['hic_interacted_gene'] = all_data['hic_interacted_gene'].apply(lambda x: ','.join(x))
 
-all_data.rename(columns={'gene_density':'gene_density (genes per million tad)', 'hic_interacted_gene_test':'hic_interacted_genes (oncogenic or tumor repressor)','nearby_cancer_genes':'nearby_cancer_genes ({}kb)'.format(dist)}, inplace=True)
+all_data.rename(columns={'gene_density':'gene_density ({}, genes per million tad)'.format(gd), 'hic_interacted_gene_test':'hic_interacted_genes (oncogenic or tumor repressor)','nearby_cancer_genes':'nearby_cancer_genes ({}kb)'.format(dist)}, inplace=True)
 all_data.to_csv(dir_+'/'+args.file_name)
 
 logger.success('\n\nThe total number of variant id after removing dosage sensitive genes:  {}\n'.format(filtered_data.shape[0]))
