@@ -371,7 +371,7 @@ all_data['tad_name'] = all_data['tad_name'].apply(lambda x: ','.join(x))
 all_data['hic_interacted_gene'] = all_data['hic_interacted_gene'].apply(lambda x: ','.join(x))
 
 all_data.rename(columns={'gene_density':'gene_density ({}, genes per million tad)'.format(gd), 'hic_interacted_gene_test':'hic_interacted_genes (oncogenic or tumor repressor)','nearby_cancer_genes':'nearby_cancer_genes ({}kb)'.format(dist)}, inplace=True)
-all_data.to_csv(dir_+'/'+args.file_name)
+all_data.to_csv(dir_+'/'+args.file_name, index=False)
 
 logger.success('\n\nThe total number of variant id after removing dosage sensitive genes:  {}\n'.format(filtered_data.shape[0]))
 
