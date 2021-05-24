@@ -60,15 +60,16 @@ The simplest way to run the program is `python safe_harbor.py -i input_filename`
 usage: safe_harbor.py [-h] [-i INPUT] [-t THRESH] [-eqtl EQTL_GENES]
                       [-tad TAD_DOMAIN] [-rr REPRESSIVE_REGION]
                       [-ar ACTIVE_REGION] [-gd GENE_DENSITY] [-o OUTPUT]
-                      [-af ALLELE_FREQ] [-hic HIC_INTERACTION]
-                      [-l NEARBY_CANCER_GENES] [-fname FILE_NAME]
+                      [-br BLACKLIST_REGION] [-af ALLELE_FREQ]
+                      [-hic HIC_INTERACTION] [-l NEARBY_CANCER_GENES]
+                      [-fname FILE_NAME]
 
 optional arguments:
   -h, --help            show this help message and exit
   -i INPUT, --input INPUT
                         input file with mobile element id
   -t THRESH, --thresh THRESH
-                        fdr threshold to filter out MEIs
+                        fdr threshold to filter out variants
   -eqtl EQTL_GENES, --eqtl_genes EQTL_GENES
                         eQTL genes
   -tad TAD_DOMAIN, --tad_domain TAD_DOMAIN
@@ -84,13 +85,16 @@ optional arguments:
                         will be used as default
   -o OUTPUT, --output OUTPUT
                         ouput folder name
+  -br BLACKLIST_REGION, --blacklist_region BLACKLIST_REGION
+                        bed file with the coordinates that the user does not
+                        want to include in output
   -af ALLELE_FREQ, --allele_freq ALLELE_FREQ
-                        lower limit threshold of allele frequency
+                        allele frequency threshold for the variant
   -hic HIC_INTERACTION, --hic_interaction HIC_INTERACTION
                         chromatin interaction bed file
   -l NEARBY_CANCER_GENES, --nearby_cancer_genes NEARBY_CANCER_GENES
-                        any variant with oncogenes or tumor repressor genes in 50kb
-                        upstream or downstream will be removed
+                        any variant with oncogenes or tumor repressor genes
+                        50kb upstream or downstream will be removed
   -fname FILE_NAME, --file_name FILE_NAME
                         output file name
 ```
@@ -117,6 +121,9 @@ Here is the description of the different parameters:
 <br/>
 
 - **output** : this parameter takes output folder name. **results** is used as default folder name.
+<br/>
+
+- **blacklist_region**: this parameter takes the bed file with coordinates that the user want to exclude from the result.
 <br/>
 
 - **allele_freq** : this parameter takes the threshold value used for filtering based on allele frequency of certain variant. The value provided will be considered as lower limit threshold and upper limit threshold will be calculated based on given value as `1-af`, keeping all those variants with AF > threshold and AF < 1- threshold . If the input file doesn't have this column, no need to use this parameter, otherwise it will give an error. But if the input file has AF, but this parameter is not passed, then AF column will be ignored and would not be considered for filtration steps.
@@ -161,9 +168,12 @@ Here is the description of the different parameters:
 |dosage_sensitive interactions|	number of interactions with dosage sentive genes|
 |hic_interacted_genes (oncogenic or tumor repressor)|	boolean value representing if the interaction with genes comprises any oncogenic or tumor repressor genes|
 |repressive_region|	boolean value representing if the variant overlaps with the repressive region or not|
+|repressive_region_info| provides chromatin state information for repressive region (Het, ReprPC, ReprPCWk, Quies)
 |nearby_cancer_genes (x kb)|	boolean value representing if there is present of oncogenic or tumor repressor genes based on the user provided distance, default value is 50 kb||
 |nearby_cancer_genes_names|	oncogenic or tumor repressor genes with in user provided distance|
-|active region|	boolean value representing if the variant overlaps with the active chromatin region or not|
+|active region| boolean value representing if the variant overlaps with the active chromatin region or not|
+|active region_info| provides chromatin state information for sctive chromatin region (TssA, TssAFlnk, Tx, TxWk)
+|fdr_test| boolean value representing if FDR value is greater than provided threshold
 |passed_all_filter|	represents boolean value, True if the variant passes all the filters used, else represented as False||
 |ucsc_link|	UCSC browser link to the variant position|
 
