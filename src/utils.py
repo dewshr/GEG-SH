@@ -25,7 +25,7 @@ def calculate_gene_density(tad, gene_density):
 def fdr_filter(x, threshold):
 	fdr_list =[]
 	for fdr in x:
-		if fdr.lower() == 'non-significant':
+		if fdr.lower() == 'nan':
 			fdr_list.append(True)
 		elif float(fdr) < float(threshold):
 			fdr_list.append(False)
