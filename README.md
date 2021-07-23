@@ -93,8 +93,9 @@ optional arguments:
   -hic HIC_INTERACTION, --hic_interaction HIC_INTERACTION
                         chromatin interaction bed file
   -l NEARBY_CANCER_GENES, --nearby_cancer_genes NEARBY_CANCER_GENES
-                        any variant with oncogenes or tumor repressor genes
-                        50kb upstream or downstream will be removed
+                        default = 0, takes number as input representing the
+                        distance user wants to check for oncogenes or tumor
+                        repressor genes in upstream or downstream of the pMEI
   -fname FILE_NAME, --file_name FILE_NAME
                         output file name
 ```
