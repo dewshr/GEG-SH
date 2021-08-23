@@ -187,9 +187,9 @@ Here is the description of the different parameters:
 
 - ***oncogenes_and_tumor_repressor_genes.bed :*** This is the list of [tumor repressors genes](https://bioinfo.uth.edu/TSGene/?csrt=14252334967482590952) and [oncogenes](http://ongene.bioinfo-minzhao.org) downloaded from [Zhao et al, Nucleic Acids Research, 2015](https://academic.oup.com/nar/article/44/D1/D1023/2503080) and [Liu et al, Journal of Genetics and Genomics, 2017](https://www.sciencedirect.com/science/article/pii/S1673852716302053?via%3Dihub) respectively.
 
-- ***blood_hic_interaction.bed :*** This file list chromatin interactions involving different blood cells. It is downloaded from (Javierre et al, Cell, 2016)[https://pubmed.ncbi.nlm.nih.gov/27863249/]
+- ***blood_hic_interaction.bed :*** This file list chromatin interactions involving different blood cells. It is downloaded from [Javierre et al, Cell, 2016](https://pubmed.ncbi.nlm.nih.gov/27863249/)
 
-- ***brain_hic_interaction.bed :*** This file list chromatin interactions involving different brain cells. It is downloaded from (Jung et al, Nature Genetics, 2019)[https://www.nature.com/articles/s41588-019-0494-8]
+- ***brain_hic_interaction.bed :*** This file list chromatin interactions involving different brain cells. It is downloaded from [Jung et al, Nature Genetics, 2019](https://www.nature.com/articles/s41588-019-0494-8)
 
 - ***dosage_sensitive_genes.txt :*** This is the list of dosage sensitive genes. This is downloaded from (Exome Aggregation Consortium, Nature, 2016)[https://www.nature.com/articles/nature19057]
 
