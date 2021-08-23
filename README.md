@@ -189,6 +189,8 @@ Here is the description of the different parameters:
 
 - ***blood_hic_interaction.bed :*** This file list chromatin interactions involving different blood cells. It is downloaded from (Javierre et al, Cell, 2016)[https://pubmed.ncbi.nlm.nih.gov/27863249/]
 
+- ***brain_hic_interaction.bed :*** This file list chromatin interactions involving different brain cells. It is downloaded from (Jung et al, Nature Genetics, 2019)[https://www.nature.com/articles/s41588-019-0494-8]
+
 - ***dosage_sensitive_genes.txt :*** This is the list of dosage sensitive genes. This is downloaded from (Exome Aggregation Consortium, Nature, 2016)[https://www.nature.com/articles/nature19057]
 
 - ***sorted_gene_annotation.bed:*** This is genes list with their start and stop position. It is downloaded using Biomart hg19 version.
