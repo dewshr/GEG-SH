@@ -12,16 +12,16 @@ import numpy as np
 ############### parameters for the program #################
 parser = argparse.ArgumentParser()
 parser.add_argument('-i', '--input',default = None, help='input file with mobile element id')
-parser.add_argument('-t','--thresh', default = None, help= 'fdr threshold to filter out variants')
+parser.add_argument('-t','--thresh', default = None, type =float, help= 'fdr threshold to filter out variants')
 parser.add_argument('-eqtl','--eqtl_genes', default = False, help= 'eQTL genes')
 parser.add_argument('-tad', '--tad_domain', default = None, help='custom tad domain file, else will use default file provided')
-parser.add_argument('-rr', '--repressive_region', default ='./data/blood_repressive_marks_state.bed', help ='bed file containing regions with repressive mark')
-parser.add_argument('-ar', '--active_region', default = './data/blood_active_transcription_marks_state.bed', help ='bed file containing regions with active transcription mark')
+parser.add_argument('-rr', '--repressive_region', default = script_path+'/data/blood_repressive_marks_state.bed', help ='bed file containing regions with repressive mark')
+parser.add_argument('-ar', '--active_region', default = script_path+'/data/blood_active_transcription_marks_state.bed', help ='bed file containing regions with active transcription mark')
 parser.add_argument('-gd', '--gene_density', default = None, help='gene density in the tad domains, mean gene density will be used as default')
 parser.add_argument('-o', '--output', default='./results', help ='ouput folder name')
 parser.add_argument('-br','--blacklist_region', default =None, help='bed file with the coordinates that the user does not want to include in output')
-parser.add_argument('-af', '--allele_freq', default = None, help ='allele frequency threshold for the variant')
-parser.add_argument('-hic', '--hic_interaction', default = './data/blood_hic_interaction.bed', help='chromatin interaction bed file')
+parser.add_argument('-af', '--allele_freq', default = None, type =float, help ='allele frequency threshold for the variant')
+parser.add_argument('-hic', '--hic_interaction', default = script_path+'/data/blood_hic_interaction.bed', help='chromatin interaction bed file')
 parser.add_argument('-l', '--nearby_cancer_genes', default = 0, help='default = 0, takes number as input representing the distance user wants to check for oncogenes or tumor repressor genes in upstream or downstream of the pMEI')
 parser.add_argument('-fname','--file_name', default='result.csv', help='output file name')
 
@@ -55,7 +55,7 @@ dist = int(args.nearby_cancer_genes)/1000
 info = "\n\nParameter information:\n\n" + "FDR threshold:\t{}\n".format(args.thresh) + "Variant Allele frequency:\t{}\n".format(args.allele_freq)
 
 if args.tad_domain == None:
-	info = info + "tad domain file used:\t{}\n".format('./data/merged_gm12878.bed')
+	info = info + "tad domain file used:\t{}\n".format(script_path+'/data/merged_gm12878.bed')
 else:
 	info = info + "tad domain file used:\t{}\n".format(args.tad_domain)
 
@@ -64,27 +64,33 @@ info = info + "Repressive region:\t{}\n".format(args.repressive_region) + "Activ
 
 
 # tumor repressor and oncogenes list
-tumor_repressor_gene = pd.read_csv('./data/oncogenes_and_tumor_repressor_genes.bed',sep='\t')
+tumor_repressor_gene = pd.read_csv(script_path+'/data/oncogenes_and_tumor_repressor_genes.bed',sep='\t')
 tumor_repressor_genes_list = tumor_repressor_gene.loc[3].tolist() #column 3 has name of genes
 
 
 #list of dosage sensitive genes
-dosage_sensitive_genes = list(filter(None, open('./data/dosage_sensitive_genes.txt','r').read().split('\n')))
+#dosage_sensitive_genes = list(filter(None, open('./data/dosage_sensitive_genes.txt','r').read().split('\n')))
+dosage_sensitive_genes = pd.read_csv('/Users/dshresth/Downloads/dosage_sensitive_genes.bed', header=None, sep='\t').iloc[:,3].tolist()
 
 
 # getting the list of TADS that consist of onco genes and tumor supressor genes
 if args.tad_domain == None:
-	cancer_tad = pd.read_csv('./data/cancer_genes_tad.bed',header=None, sep='\t')
+	cancer_tad = pd.read_csv(script_path+'/data/cancer_genes_tad.bed',header=None, sep='\t')
 	cancer_tad['tad_name'] = cancer_tad[5] + '-'+cancer_tad[6].map(str)+'-'+cancer_tad[7].map(str)
 	
 	#list of tad domains with tumor repressor or oncogenes
 	cancer_tad_list = cancer_tad['tad_name'].tolist()
 
-	gene_density = pd.read_csv('./data/gene_density_all_tad.csv')
+	dosage_tad = pd.read_csv(script_path+'/data/dosage_genes_tad.bed',header=None, sep='\t')
+	dosage_tad['tad_name'] = dosage_tad[5] + '-'+dosage_tad[6].map(str)+'-'+dosage_tad[7].map(str)
+	dosage_tad_list = dosage_tad['tad_name'].tolist()
+
+
+	gene_density = pd.read_csv(script_path+'/data/gene_density_all_tad.csv')
 	gene_density = gene_density.set_index('name')
 
 	# tad domain information for genes
-	genes_tad = pd.read_csv('./data/genes_tad.bed', sep='\t', header=None).iloc[:,[3,5,6,7]]
+	genes_tad = pd.read_csv(script_path+'/data/genes_tad.bed', sep='\t', header=None).iloc[:,[3,5,6,7]]
 	genes_tad.columns = ['gene','chr','start','end']
 	genes_tad['name'] = genes_tad.chr + '-'+ genes_tad['start'].map(str)+'-'+genes_tad['end'].map(str)
 	genes_tad = genes_tad.groupby('gene').agg(lambda x: list(set(list(x))))
@@ -92,16 +98,21 @@ if args.tad_domain == None:
 
 else:
 	# TAD gene density calculation
-	os.system('bedtools intersect -a ./data/sorted_gene_annotation.bed -b {} -wb > {}/genes_tad.bed'.format(args.tad_domain,dir_))
-	os.system('bedtools intersect -a ./data/oncogenes_and_tumor_repressor_genes.bed -b {} -wb > {}/cancer_genes_tad.bed'.format(args.tad_domain,dir_))
+	os.system('bedtools intersect -a {}/data/sorted_gene_annotation.bed -b {} -wb > {}/genes_tad.bed'.format(script_path,args.tad_domain,dir_))
+	os.system('bedtools intersect -a {}/data/oncogenes_and_tumor_repressor_genes.bed -b {} -wb > {}/cancer_genes_tad.bed'.format(script_path,args.tad_domain,dir_))
+	os.system('bedtools intersect -a {}/data/dosage_sensitive_genes.bed -b {} -wb > {}/dosage_genes_tad.bed'.format(script_path,args.tad_domain,dir_))
 
-	cancer_tad = pd.read_csv('./results/cancer_genes_tad.bed',header=None, sep='\t')
+	cancer_tad = pd.read_csv("./{}/cancer_genes_tad.bed".format(args.output),header=None, sep='\t')
 	cancer_tad['tad_name'] = cancer_tad[5] + '-'+cancer_tad[6].map(str)+'-'+cancer_tad[7].map(str)
+
+	dosage_tad = pd.read_csv('./{}/dosage_genes_tad.bed'.format(args.output),header=None, sep='\t')
+	dosage_tad['tad_name'] = dosage_tad[5] + '-'+dosage_tad[6].map(str)+'-'+dosage_tad[7].map(str)
 	
 	#list of tad domains with tumor repressor or oncogenes
 	cancer_tad_list = cancer_tad['tad_name'].tolist()
+	dosage_tad_list = dosage_tad['tad_name'].tolist()
 
-	gene_density = pd.read_csv('./results/genes_tad.bed', sep='\t', header=None).iloc[:,[3,5,6,7]]
+	gene_density = pd.read_csv('./{}/genes_tad.bed'.format(args.output), sep='\t', header=None).iloc[:,[3,5,6,7]]
 	gene_density.columns = ['gene','chr','start','end']
 	gene_density['length'] = abs(gene_density['start'] - gene_density['end'])
 	gene_density['name'] = gene_density.chr + '-'+ gene_density['start'].map(str)+'-'+gene_density['end'].map(str)
@@ -164,7 +175,7 @@ if args.nearby_cancer_genes > 0:
 
 # variants overlap region with TAD domain
 if args.tad_domain == None:
-	os.system('bedtools intersect -a {}/sorted_variant_coordinates.bed -b ./data/merged_gm12878.bed  -wb > {}/variant_tad.bed'.format(dir_,dir_)) 
+	os.system('bedtools intersect -a {}/sorted_variant_coordinates.bed -b {}/data/merged_gm12878.bed  -wb > {}/variant_tad.bed'.format(dir_,script_path,dir_)) 
 else:
 	os.system('bedtools intersect -a {}/sorted_variant_coordinates.bed -b {} -wb > {}/variant_tad.bed'.format(dir_,args.tad_domain, dir_)) 
 
@@ -186,6 +197,7 @@ input_data['tad_name'] = input_data['id'].apply(lambda x: get_tad_info(x, varian
 
 logger.info('checking common TAD domain betweem variants and  tumor repressor/oncogenes')
 input_data['same_cancer_tad'] = input_data['tad_name'].apply(lambda x: True if len(set(x)&set(cancer_tad_list))>0 else False) # checking if any of the tads overlap
+input_data['same_dosage_tad'] = input_data['tad_name'].apply(lambda x: True if len(set(x)&set(dosage_tad_list))>0 else False) # checking if any of the tads overlap
 
 
 
@@ -359,9 +371,9 @@ logger.info('removing variants interacting with dosage sensitive genes or tumor 
 logger.info('removing variants with nearby tumor repressor or oncogenes')
 
 if args.nearby_cancer_genes >0:
-	filtered_data = filtered_data[(filtered_data['same_cancer_tad']==False)&(filtered_data['gene_density']<gd)&(filtered_data['dosage_sensitive_interaction']==0)&(filtered_data['repressive_region']==False)&(filtered_data['nearby_cancer_genes']==False)&(filtered_data['common_tad_count']==0)&(filtered_data['hic_interacted_gene_test']==False)]
+	filtered_data = filtered_data[(filtered_data['same_cancer_tad']==False)&(filtered_data['same_dosage_tad']==False)&(filtered_data['gene_density']<gd)&(filtered_data['dosage_sensitive_interaction']==0)&(filtered_data['repressive_region']==False)&(filtered_data['nearby_cancer_genes']==False)&(filtered_data['common_tad_count']==0)&(filtered_data['hic_interacted_gene_test']==False)]
 else:
-	filtered_data = filtered_data[(filtered_data['same_cancer_tad']==False)&(filtered_data['gene_density']<gd)&(filtered_data['dosage_sensitive_interaction']==0)&(filtered_data['repressive_region']==False)&(filtered_data['common_tad_count']==0)&(filtered_data['hic_interacted_gene_test']==False)]
+	filtered_data = filtered_data[(filtered_data['same_cancer_tad']==False)&(filtered_data['same_dosage_tad']==False)&(filtered_data['gene_density']<gd)&(filtered_data['dosage_sensitive_interaction']==0)&(filtered_data['repressive_region']==False)&(filtered_data['common_tad_count']==0)&(filtered_data['hic_interacted_gene_test']==False)]
 
 
 
