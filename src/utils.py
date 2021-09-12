@@ -21,15 +21,38 @@ def calculate_gene_density(tad, gene_density):
 
 
 ######################## function to filter given user defined FDR threshold ###############
+#False means it didn't pass the Fdr threshold
+
+'''
 @logger.catch
-def fdr_filter(x, threshold):
+def fdr_filter2(x, threshold):
 	fdr_list =[]
 	for fdr in x:
 		if fdr.lower() == 'nan':
 			fdr_list.append(True)
+		elif fdr.lower() == 'not-tested':
+			fdr_list.append(True)
 		elif float(fdr) < float(threshold):
 			fdr_list.append(False)
 		else:
+			fdr_list.append(True)
+
+	if False in fdr_list:
+		return False
+	else:
+		return True
+'''
+
+@logger.catch
+def fdr_filter(x, threshold):
+	fdr_list =[]
+	for fdr in x:
+		try:
+			if float(fdr) < threshold:
+				fdr_list.append(False)
+			else:
+				fdr_list.append(True)
+		except:
 			fdr_list.append(True)
 
 	if False in fdr_list:
