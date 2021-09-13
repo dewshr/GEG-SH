@@ -1,5 +1,5 @@
 # Safe Harbor
-The script allows filtering of the given different variants on different parameters provided by the user such as allele frequency, false discovery rate (FDR), nearby tumor repressor genes or oncogenes etc. The main purpose is to narrow down the variant positions which can be then tested and used for gene therapy purpose
+The script allows filtering of the given different variants on different parameters provided by the user such as allele frequency, eQTL false discovery rate (FDR), repressive chromatin region, chromatin interaction etc. The main purpose of the program is to identify candidate Genomic Safe Harbor (GSH) sites which can be then tested and used for gene therapy purpose
 
 ------
 > **_NOTE:_** The program is based on hg19 version.
