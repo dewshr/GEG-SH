@@ -44,7 +44,7 @@ User can use ***environment.yml*** using conda to create a new environment with 
 
 The input file should be in tab delimited format. The minimum requirement for the input file is the ***id*** and ***position***. The picture below shows example format of the data:
 
-![input_data_example](https://user-images.githubusercontent.com/22225447/111481096-9f761d80-8700-11eb-9f3a-86a2d2bb1dea.png)
+![input_data_example](https://user-images.githubusercontent.com/22225447/133011347-809044d0-dfa7-40a6-8b13-4ab7403741b3.png)
 
 <br/>
 
