@@ -140,7 +140,7 @@ def get_tad_info(x, mei_tad):
 @logger.catch
 def get_round_value(x):
     try:
-        return round(float(x),2)
+        return round(float(x),3)
     except:
         return x
 
