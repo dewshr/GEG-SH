@@ -55,6 +55,10 @@ The input file should be in tab delimited format. The minimum requirement for th
 <br/>
 
 ## 3) Running the program
+------
+> **_NOTE:_** Before running the program, make sure all files are extracted. You can do that by running the script **extract.sh** by running following command in terminal in mac or linux system: `sh ./extract.sh` 
+------
+
 The simplest way to run the program is `python safe_harbor.py -i input_filename`, assuming the input file has at least `id and position` column. In this case, the program assumes that the input file has only `id and position` column, and even if there are other columns such as `FDR, AF and eQTL`, since the user did not pass the required parameters while running the program those columns will be ignored. But for other required files such as `TAD domain information, repressive region, chromatin interaction` default files will be used. To see all the parameters available you can run `python safe_harbor.py -h`, which will give following details:
 ```
 usage: safe_harbor.py [-h] [-i INPUT] [-t THRESH] [-eqtl EQTL_GENES]
