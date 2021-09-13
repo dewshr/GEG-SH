@@ -64,7 +64,7 @@ info = info + "Repressive region:\t{}\n".format(args.repressive_region) + "Activ
 
 
 # tumor repressor and oncogenes list
-tumor_repressor_gene = pd.read_csv(script_path+'/data/oncogenes_and_tumor_repressor_genes.bed',sep='\t')
+tumor_repressor_gene = pd.read_csv(script_path+'/data/oncogenes_and_tumor_suppressor_genes.bed',sep='\t')
 tumor_repressor_genes_list = tumor_repressor_gene.loc[3].tolist() #column 3 has name of genes
 
 
@@ -99,7 +99,7 @@ if args.tad_domain == None:
 else:
 	# TAD gene density calculation
 	os.system('bedtools intersect -a {}/data/sorted_gene_annotation.bed -b {} -wb > {}/genes_tad.bed'.format(script_path,args.tad_domain,dir_))
-	os.system('bedtools intersect -a {}/data/oncogenes_and_tumor_repressor_genes.bed -b {} -wb > {}/cancer_genes_tad.bed'.format(script_path,args.tad_domain,dir_))
+	os.system('bedtools intersect -a {}/data/oncogenes_and_tumor_suppressor_genes.bed -b {} -wb > {}/cancer_genes_tad.bed'.format(script_path,args.tad_domain,dir_))
 	os.system('bedtools intersect -a {}/data/dosage_sensitive_genes.bed -b {} -wb > {}/dosage_genes_tad.bed'.format(script_path,args.tad_domain,dir_))
 
 	cancer_tad = pd.read_csv("./{}/cancer_genes_tad.bed".format(args.output),header=None, sep='\t')
@@ -166,7 +166,7 @@ if args.nearby_cancer_genes > 0:
 	input_data.loc[:,['chr','extended_start','extended_stop','id']].to_csv(os.path.join(dir_,'sorted_extended_variant_coordinates.bed'), header=False, sep='\t',index=False)
 
 	logger.info('looking for nearby tumor repressor or oncogenes')
-	os.system('bedtools intersect -a {}/sorted_extended_variant_coordinates.bed -b ./data/oncogenes_and_tumor_repressor_genes.bed -wb > {}/oncogenic_tumor_repressor_variant.bed'.format(dir_,dir_))
+	os.system('bedtools intersect -a {}/sorted_extended_variant_coordinates.bed -b ./data/oncogenes_and_tumor_suppressor_genes.bed -wb > {}/oncogenic_tumor_repressor_variant.bed'.format(dir_,dir_))
 
 	variant_nearby_cancer = pd.read_csv('{}/oncogenic_tumor_repressor_variant.bed'.format(dir_), header=None, sep='\t')
 	variant_nearby_cancer.columns = ['chr','start','stop','id','c_chr','c_start','c_stop','genes','gene_id']
