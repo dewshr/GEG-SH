@@ -133,7 +133,7 @@ Here is the description of the different parameters:
 - **hic_interaction** : this parameter takes the chromatin interaction file. The file should have 4 columns: `chr, start, stop and gene`. This file is used to check if any of the variant involved interaction involve tumor repressor or oncogenes and dosage sensitive genes.
 <br/>
 
-- **nearby_cancer_genes** : this parameter takes the value in base pair. The value represents how many base pairs upstream and downstream, the user wants to look for tumor repressor or oncogenes. The default value is `50000 (50 kb)`.
+- **nearby_cancer_genes** : this parameter takes the value in base pair. The value represents how many base pairs upstream and downstream, the user wants to look for tumor repressor or oncogenes. The default value is `0 (0 kb)`.
 <br/>
 
 - **file_name** : this parameter takes output filename for result. Default file name is `result.csv`.Two main output files will be generated. One will contain all the data with raw information, another will contain just the filtered result with `id, position and UCSC link.`
@@ -159,11 +159,11 @@ Here is the description of the different parameters:
 |chr|	chromosome number of variant|
 |start|	chromosome start position|
 |stop|	chromosome end position|
-|extended_start|	upstream extension of start, based on the extension parameter, by default it is extended by 50 kb|
-|extended_stop|	downstream extension of stop, based on the extension parameter, by default it is extended by 50 kb|
+|extended_start|	(this will only be in output if linear distance is used for filtration) upstream extension of start, based on the extension parameter, by default it is extended by x kb|
+|extended_stop|	(this will only be in output if linear distance is used for filtration) downstream extension of stop, based on the extension parameter, by default it is extended by x kb|
 |tad_name|	tad domain associated with the variant|
 |same_cancer_tad|	represents boolean value, True if variant and cancer genes or tumor repressor genes are in same TAD, else represented as False|
-|gene_density (genes per million tad)|	number of genes per mb tad|
+|gene_density (x, genes per million tad)|	number of genes per mb tad|
 |hic_interacted_genes|	genes interacting with the variant associated locus|
 |common_tad_count|	common TAD between the variant and the interacted genes|
 |dosage_sensitive interactions|	number of interactions with dosage sentive genes|
@@ -171,7 +171,7 @@ Here is the description of the different parameters:
 |repressive_region|	boolean value representing if the variant overlaps with the repressive region or not|
 |repressive_region_info| provides chromatin state information for repressive region (Het, ReprPC, ReprPCWk, Quies)
 |nearby_cancer_genes (x kb)|	boolean value representing if there is present of oncogenic or tumor repressor genes based on the user provided distance, default value is 50 kb||
-|nearby_cancer_genes_names|	oncogenic or tumor repressor genes with in user provided distance|
+|nearby_cancer_genes_names|	(this will only be in output if linear distance is used for filtration) oncogenic or tumor repressor genes with in user provided distance|
 |active region| boolean value representing if the variant overlaps with the active chromatin region or not|
 |active region_info| provides chromatin state information for sctive chromatin region (TssA, TssAFlnk, Tx, TxWk)
 |fdr_test| boolean value representing if FDR value is greater than provided threshold
@@ -185,7 +185,7 @@ Here is the description of the different parameters:
 ## 5) Data Description
 - ***merged_gm12878.bed :*** This is the TAD domain file. It is downloaded from [Rao et al, Cell, 2014](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE63525). ***GSE63525_GM12878_primary+replicate_Arrowhead_domainlist.txt** is further processed to generate bed file with **chr, start, stop and length** of TAD domain. ***bedtools merge*** is then applied to the generated bed file. Bed file should be sorted before applying bedtools merge.
 
-- ***oncogenes_and_tumor_repressor_genes.bed :*** This is the list of [tumor repressors genes](https://bioinfo.uth.edu/TSGene/?csrt=14252334967482590952) and [oncogenes](http://ongene.bioinfo-minzhao.org) downloaded from [Zhao et al, Nucleic Acids Research, 2015](https://academic.oup.com/nar/article/44/D1/D1023/2503080) and [Liu et al, Journal of Genetics and Genomics, 2017](https://www.sciencedirect.com/science/article/pii/S1673852716302053?via%3Dihub) respectively.
+- ***oncogenes_and_tumor_suppressor_genes.bed :*** This is the list of [tumor suppressors genes](https://bioinfo.uth.edu/TSGene/?csrt=14252334967482590952) and [oncogenes](http://ongene.bioinfo-minzhao.org) downloaded from [Zhao et al, Nucleic Acids Research, 2015](https://academic.oup.com/nar/article/44/D1/D1023/2503080) and [Liu et al, Journal of Genetics and Genomics, 2017](https://www.sciencedirect.com/science/article/pii/S1673852716302053?via%3Dihub) respectively.
 
 - ***blood_hic_interaction.bed :*** This file list chromatin interactions involving different blood cells. It is downloaded from [Javierre et al, Cell, 2016](https://pubmed.ncbi.nlm.nih.gov/27863249/)
 
