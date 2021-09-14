@@ -1,5 +1,5 @@
-# Safe Harbor
-The script allows filtering of the given different variants on different parameters provided by the user such as allele frequency, eQTL false discovery rate (FDR), repressive chromatin region, chromatin interaction etc. The main purpose of the program is to identify candidate Genomic Safe Harbor (GSH) sites which can be then tested and used for gene therapy purpose
+# Genomicsand Epigenetic Guided Safe Harbor mapper (GEG-SH mapper)
+This program is designed to identify candidate Genomic Safe Harbor (GSH) sites for safe genome editing. It integrates  polymorphic mobile element insertions (pMEIs) with epigenomic signatures and 3D chromatin organization information.
 
 ------
 > **_NOTE:_** The program is based on hg19 version.
@@ -23,12 +23,11 @@ The script allows filtering of the given different variants on different paramet
 
 <br/>
 
-Before running the program user has to install all the required dependencies. User can follow either following steps for that purpose:
-User can use ***environment.yml*** using conda to create a new environment with required dependensies. If you have conda installed, following code can be used to create separate environment with the dependencies installed:
+All the required dependencies for this program can be loaded by the following steps
 
     `conda env create -f environment.yml`
-
-    After this you can activate the created environment using following command:
+    
+After this you can activate the created environment using following command:
 
     `conda activate safe_harbor`
 
@@ -42,7 +41,7 @@ User can use ***environment.yml*** using conda to create a new environment with 
 
 ## 2) Input file format
 
-The input file should be in tab delimited format. The minimum requirement for the input file is the ***id*** and ***position***. The picture below shows example format of the data:
+The input file of pMEIs should be in tab delimited format with the following column name: “**id, position, fdr, af**”. The minimum requirements for the input file is the **id** and **position**. The picture below shows example format of the data:
 
 ![input_data_example](https://user-images.githubusercontent.com/22225447/133011347-809044d0-dfa7-40a6-8b13-4ab7403741b3.png)
 
