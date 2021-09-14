@@ -186,7 +186,9 @@ Here is the description of the different parameters:
 <br/>
 
 ## 5) Data Description
-- ***merged_gm12878.bed :*** This is the TAD domain file. It is downloaded from [Rao et al, Cell, 2014](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE63525). ***GSE63525_GM12878_primary+replicate_Arrowhead_domainlist.txt** is further processed to generate bed file with **chr, start, stop and length** of TAD domain. ***bedtools merge*** is then applied to the generated bed file. Bed file should be sorted before applying bedtools merge.
+- ***merged_gm12878.bed :*** This represents the TAD domain file for blood. It is downloaded from [Rao et al, Cell, 2014](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE63525). **GSE63525_GM12878_primary+replicate_Arrowhead_domainlist.txt** is further processed to generate bed file with **chr, start, stop and length** of TAD domain. ***bedtools merge*** is then applied to the generated bed file. Bed file should be sorted before applying bedtools merge.
+
+- **brain_hc_tad_100kb_domains.bed :** This represents the TAD domain file for brain. Raw Hi-C data for hippocampus (SRA: SRR4094699) was downloaded from [GSE86189](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE86189). It was then processed locally using [Hic-pro](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-015-0831-x) (version 2.11.1) and [HiCExplorer](https://hicexplorer.readthedocs.io/en/latest/content/list-of-tools.html) (version 3.6).
 
 - ***oncogenes_and_tumor_suppressor_genes.bed :*** This is the list of [tumor suppressors genes](https://bioinfo.uth.edu/TSGene/?csrt=14252334967482590952) and [oncogenes](http://ongene.bioinfo-minzhao.org) downloaded from [Zhao et al, Nucleic Acids Research, 2015](https://academic.oup.com/nar/article/44/D1/D1023/2503080) and [Liu et al, Journal of Genetics and Genomics, 2017](https://www.sciencedirect.com/science/article/pii/S1673852716302053?via%3Dihub) respectively.
 
@@ -194,13 +196,17 @@ Here is the description of the different parameters:
 
 - ***brain_hic_interaction.bed :*** This file list chromatin interactions involving different brain cells. It is downloaded from [Jung et al, Nature Genetics, 2019](https://www.nature.com/articles/s41588-019-0494-8)
 
-- ***dosage_sensitive_genes.txt :*** This is the list of dosage sensitive genes. This is downloaded from (Exome Aggregation Consortium, Nature, 2016)[https://www.nature.com/articles/nature19057]
+- ***dosage_sensitive_genes.bed :*** This is the list of dosage sensitive genes. This is downloaded from (Exome Aggregation Consortium, Nature, 2016)[https://www.nature.com/articles/nature19057]. The genes were selected based on pLI (probability loss of function intolerant) value greater than 0.9.
 
 - ***sorted_gene_annotation.bed:*** This is genes list with their start and stop position. It is downloaded using Biomart hg19 version.
 
-- ***blood_repressive_marks :*** This contains the chromatin regions that are assigned to be repressive in nature based on ChromHMM. The files associated with **blood** are filtered using column **ANATOMY** from [Roadmap, 2013](https://docs.google.com/spreadsheets/d/1yikGx4MsO9Ei36b64yOy9Vb6oPC5IBGlFbYEt-N6gOM/edit#gid=15), and then regions labelled as `Het, ReprPC, ReprPCWk, Quies` were extracted.
+- ***blood_repressive_marks_state.bed :*** This contains the chromatin regions that are assigned to be repressive/quiescent/heterochromatin in nature based on ChromHMM. The files associated with **blood** are filtered using column **ANATOMY** from [Roadmap, 2013](https://docs.google.com/spreadsheets/d/1yikGx4MsO9Ei36b64yOy9Vb6oPC5IBGlFbYEt-N6gOM/edit#gid=15), and then regions labelled as `Het, ReprPC, ReprPCWk, Quies` were extracted.
 
-- ***blood_active_transcription_marks :*** This contains the chromatin regions that are assigned to be active in nature based on ChromHMM. The files associated with **blood** are filtered using column **ANATOMY** from [Roadmap, 2013](https://docs.google.com/spreadsheets/d/1yikGx4MsO9Ei36b64yOy9Vb6oPC5IBGlFbYEt-N6gOM/edit#gid=15), and then regions labelled as `TssA, TssAFlnk, Tx, TxWk` were extracted.
+- ***blood_active_transcription_marks_state.bed :*** This contains the chromatin regions that are assigned to be active in nature based on ChromHMM. The files associated with **blood** are filtered using column **ANATOMY** from [Roadmap, 2013](https://docs.google.com/spreadsheets/d/1yikGx4MsO9Ei36b64yOy9Vb6oPC5IBGlFbYEt-N6gOM/edit#gid=15), and then regions labelled as `TssA, TssAFlnk, Tx, TxWk` were extracted.
+
+- ***brain_repressive_marks_state.bed :*** This contains the chromatin regions that are assigned to be repressivequiescent/heterochromatin in nature based on ChromHMM. The files associated with **brain** are filtered using column **ANATOMY** from [Roadmap, 2013](https://docs.google.com/spreadsheets/d/1yikGx4MsO9Ei36b64yOy9Vb6oPC5IBGlFbYEt-N6gOM/edit#gid=15), and then regions labelled as `Het, ReprPC, ReprPCWk, Quies` were extracted.
+
+- ***brain_active_transcription_marks_state.bed :*** This contains the chromatin regions that are assigned to be active in nature based on ChromHMM. The files associated with **brain** are filtered using column **ANATOMY** from [Roadmap, 2013](https://docs.google.com/spreadsheets/d/1yikGx4MsO9Ei36b64yOy9Vb6oPC5IBGlFbYEt-N6gOM/edit#gid=15), and then regions labelled as `TssA, TssAFlnk, Tx, TxWk` were extracted.
 
 - ***genes_tad.bed :*** This file provides the TAD domain information for the genes in **sorted_gene_annotation.bed**. The file is generated using [bedtools intersect](https://bedtools.readthedocs.io/en/latest/content/tools/intersect.html) on the TAD domain file downloaded from ***Rao et al, Cell, 2014*** and gene annotation file from ***Ensembl Biomart hg19***. If the user provides own tad domain file, new file will be generated, else this file will be used as default.
 
