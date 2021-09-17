@@ -1,4 +1,4 @@
-# Genomicsand Epigenetic Guided Safe Harbor mapper (GEG-SH mapper)
+# Genomics and Epigenetic Guided Safe Harbor mapper (GEG-SH mapper)
 This program is designed to identify candidate Genomic Safe Harbor (GSH) sites for safe genome editing. It integrates  polymorphic mobile element insertions (pMEIs) with epigenomic signatures and 3D chromatin organization information.
 
 ------
