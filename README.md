@@ -23,7 +23,7 @@ This program is designed to identify candidate Genomic Safe Harbor (GSH) sites f
 
 <br/>
 
-All the required dependencies for this program can be loaded by the following steps
+All the required dependencies for this program are listed in **environment.yml** and can be loaded by the following steps
 
     `conda env create -f environment.yml`
     
