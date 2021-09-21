@@ -9,4 +9,4 @@ dependencies:
  - pandas=1.2.3
  - bedtools=2.29.2
  - pip:
-   - loguru
+   - loguru==0.5.3
