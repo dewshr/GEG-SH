@@ -70,7 +70,7 @@ tumor_repressor_genes_list = tumor_repressor_gene.loc[3].tolist() #column 3 has 
 
 #list of dosage sensitive genes
 #dosage_sensitive_genes = list(filter(None, open('./data/dosage_sensitive_genes.txt','r').read().split('\n')))
-dosage_sensitive_genes = pd.read_csv('/Users/dshresth/Downloads/dosage_sensitive_genes.bed', header=None, sep='\t').iloc[:,3].tolist()
+dosage_sensitive_genes = pd.read_csv(script_path+'/data/dosage_sensitive_genes.bed', header=None, sep='\t').iloc[:,3].tolist()
 
 
 # getting the list of TADS that consist of onco genes and tumor supressor genes
