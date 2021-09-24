@@ -34,7 +34,7 @@ if not os.path.exists(args.output):
 
 
 logger_path = os.path.abspath(args.output)
-logger.add(logger_path+'/variant_filter{time}.log', rotation='10 MB')
+logger.add(logger_path+'/safe_harbor.log', rotation='10 MB',mode='w')
 logger.level("WARNING", color="<bold><red>")
 
 logger.info('COMMAND USED:\npython ' + ' '.join(sys.argv) +'\n')
