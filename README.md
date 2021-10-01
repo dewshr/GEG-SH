@@ -75,8 +75,6 @@ optional arguments:
                         input file with mobile element id
   -t THRESH, --thresh THRESH
                         fdr threshold to filter out variants
-  -eqtl EQTL_GENES, --eqtl_genes EQTL_GENES
-                        eQTL genes
   -tad TAD_DOMAIN, --tad_domain TAD_DOMAIN
                         custom tad domain file, else will use default file
                         provided
@@ -109,9 +107,6 @@ Here is the description of the different parameters:
 <br/>
 
 - **thresh** : this parameter is used to filter the column FDR, keeping all those variants with FDR > threshold. If the input file doesn't have this column, no need to use this parameter, otherwise it will give an error. But if the input file has FDR, but this parameter is not passed, then FDR column will be ignored and would not be considered for filtration steps. If there are multiple FDR values, each value should be separated by `,`.
-<br/>
-
-- **eqtl_genes** : this parameter takes boolean value as `True or False`. If your input file has eQTL genes associated with MEIs, then user need to pass the parameter as True, by default it is set to ***False***. If there are multiple eQTL genes, each gene should be separated by `,`. The eQTL genes names are expected to be in **gene symbol format**.
 <br/>
 
 - **tad_domain** : this parameter takes the TAD domain information file in bed file format. The default value is set to `None`, so if user does not pass any file, it will look for the provided file in data folder (***merged_gm12878.bed***). This file is used for several purpose, to assign TAD domain information to the variants and genes, calculate gene density, and check the common TAD domain between variant and tumor repressor or oncogenes
