@@ -13,7 +13,7 @@ import numpy as np
 parser = argparse.ArgumentParser()
 parser.add_argument('-i', '--input',default = None, help='input file with mobile element id')
 parser.add_argument('-t','--thresh', default = None, type =float, help= 'fdr threshold to filter out variants')
-parser.add_argument('-eqtl','--eqtl_genes', default = False, help= 'eQTL genes')
+#parser.add_argument('-eqtl','--eqtl_genes', default = False, help= 'eQTL genes')
 parser.add_argument('-tad', '--tad_domain', default = None, help='custom tad domain file, else will use default file provided')
 parser.add_argument('-rr', '--repressive_region', default = script_path+'/data/blood_repressive_marks_state.bed', help ='bed file containing regions with repressive mark')
 parser.add_argument('-ar', '--active_region', default = script_path+'/data/blood_active_transcription_marks_state.bed', help ='bed file containing regions with active transcription mark')
@@ -334,14 +334,14 @@ else:
 
 
 
-if args.eqtl_genes != False:
-	all_data['eQTL_test'] = all_data['eqtl'].apply(lambda x: filter_tumor_repressor_genes(x.replace(' ','').split(','), tumor_repressor_genes_list))
+#if args.eqtl_genes != False:
+#	all_data['eQTL_test'] = all_data['eqtl'].apply(lambda x: filter_tumor_repressor_genes(x.replace(' ','').split(','), tumor_repressor_genes_list))
 
-	eqtl_passed_variants = all_data[all_data['eQTL_test']==False]['id'].tolist()
+#	eqtl_passed_variants = all_data[all_data['eQTL_test']==False]['id'].tolist()
 	#print(eqtl_passed_variants)
 
-	logger.info('keeping only those variants if EQTL gene is not tumor repressor or oncogenes')
-	filtered_data = filtered_data[filtered_data['id'].isin(eqtl_passed_variants)]
+#	logger.info('keeping only those variants if EQTL gene is not tumor repressor or oncogenes')
+#	filtered_data = filtered_data[filtered_data['id'].isin(eqtl_passed_variants)]
 
 
 ######################################### removing variants overlapping with the blacklist region provided by the user ###############################
