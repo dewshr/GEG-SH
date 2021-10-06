@@ -98,7 +98,7 @@ if args.tad_domain == None:
 
 else:
 	# TAD gene density calculation
-	os.system('bedtools intersect -a {}/data/sorted_gene_annotation.bed -b {} -wb > {}/genes_tad.bed'.format(script_path,args.tad_domain,dir_))
+	os.system('bedtools intersect -a {}/data/grch37_ensembl_genes_104.bed -b {} -wb > {}/genes_tad.bed'.format(script_path,args.tad_domain,dir_))
 	os.system('bedtools intersect -a {}/data/oncogenes_and_tumor_suppressor_genes.bed -b {} -wb > {}/cancer_genes_tad.bed'.format(script_path,args.tad_domain,dir_))
 	os.system('bedtools intersect -a {}/data/dosage_sensitive_genes.bed -b {} -wb > {}/dosage_genes_tad.bed'.format(script_path,args.tad_domain,dir_))
 
@@ -136,7 +136,7 @@ else:
 
 
 info = info + "Nearby cancer gene distance:\t{}kb\n".format(dist) + "Gene density:\t{}, this value represents mean value if user parameter is None\n".format(gd)
-info = info + "eQTL genes info in input file:\t{}\n".format(args.eqtl_genes) + "Output folder:\t{}\n".format(args.output) + "Output filename:\t{}\n".format(args.file_name)
+info = info + "Output folder:\t{}\n".format(args.output) + "Output filename:\t{}\n".format(args.file_name)
 
 logger.info(info)
 
