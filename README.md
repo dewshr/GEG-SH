@@ -149,6 +149,7 @@ Here is the description of the different parameters:
 <br/>
 
 ## 4) Output file Description
+Column header description based on the two ouput files and parameters selected.
 
 |Column name|	Description|
 |-----------|--------------|
@@ -159,8 +160,8 @@ Here is the description of the different parameters:
 |chr|	chromosome number of variant|
 |start|	chromosome start position|
 |stop|	chromosome end position|
-|extended_start|	(this will only be in output if linear distance is used for filtration) upstream extension of start, based on the extension parameter, by default it is extended by x kb|
-|extended_stop|	(this will only be in output if linear distance is used for filtration) downstream extension of stop, based on the extension parameter, by default it is extended by x kb|
+|extended_start|	(**this will only be in output if linear distance is used for filtration**) upstream extension of start, based on the extension parameter, by default it is extended by x kb|
+|extended_stop|	(**this will only be in output if linear distance is used for filtration**) downstream extension of stop, based on the extension parameter, by default it is extended by x kb|
 |tad_name|	tad domain associated with the variant|
 |same_cancer_tad|	represents boolean value, True if variant and cancer genes or tumor repressor genes are in same TAD, else represented as False|
 |gene_density (x, genes per million tad)|	number of genes per mb tad|
@@ -170,8 +171,8 @@ Here is the description of the different parameters:
 |hic_interacted_genes (oncogenic or tumor repressor)|	boolean value representing if the interaction with genes comprises any oncogenic or tumor repressor genes|
 |repressive_region|	boolean value representing if the variant overlaps with the repressive region or not|
 |repressive_region_info| provides chromatin state information for repressive region (Het, ReprPC, ReprPCWk, Quies)
-|nearby_cancer_genes (x kb)|	boolean value representing if there is present of oncogenic or tumor repressor genes based on the user provided distance, default value is 50 kb||
-|nearby_cancer_genes_names|	(this will only be in output if linear distance is used for filtration) oncogenic or tumor repressor genes with in user provided distance|
+|nearby_cancer_genes (x kb)| (**this will only be in output if linear distance is used for filtration**) boolean value representing if there is present of oncogenic or tumor repressor genes based on the user provided distance, default value is 0 kb||
+|nearby_cancer_genes_names|	(**this will only be in output if linear distance is used for filtration**) oncogenic or tumor repressor genes with in user provided distance|
 |active region| boolean value representing if the variant overlaps with the active chromatin region or not|
 |active region_info| provides chromatin state information for sctive chromatin region (TssA, TssAFlnk, Tx, TxWk)
 |fdr_test| boolean value representing if FDR value is greater than provided threshold
