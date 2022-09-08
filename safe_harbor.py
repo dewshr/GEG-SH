@@ -160,7 +160,7 @@ input_data = input_data.sort_values(by=['chr','start'], ascending=[True, True])
 logger.info('creating bed file from the input data')
 input_data.loc[:,['chr','start','stop','id']].to_csv(os.path.join(dir_,'sorted_variant_coordinates.bed'), header=False, sep='\t',index=False)		# writing bed file for snp coordinates
 
-if args.nearby_cancer_genes > 0:
+if int(args.nearby_cancer_genes) > 0:
 	input_data['extended_start'] = input_data['start'].apply(lambda x: int(x)- int(args.nearby_cancer_genes) if int(x)>int(args.nearby_cancer_genes) else 0)
 	input_data['extended_stop'] = input_data['stop']+ int(args.nearby_cancer_genes)
 	input_data.loc[:,['chr','extended_start','extended_stop','id']].to_csv(os.path.join(dir_,'sorted_extended_variant_coordinates.bed'), header=False, sep='\t',index=False)
@@ -273,7 +273,7 @@ all_data[['repressive_region', 'repressive_region_info']] = all_data['id'].apply
 logger.info('checking for variants with nearby oncogenes or tumor repressor genes')
 
 #print(filter7.head())
-if args.nearby_cancer_genes > 0:
+if int(args.nearby_cancer_genes) > 0:
 	all_data['nearby_cancer_genes'] = all_data['id'].apply(lambda x: filter_nearby_cancer_genes(x, variant_nearby_cancer_list))
 	all_data['nearby_cancer_gene_names'] = all_data['id'].apply(lambda x: get_nearby_genes(x, variant_nearby_cancer))
 
@@ -370,7 +370,7 @@ logger.info('removing variants with TAD domain having gene density < {}'.format(
 logger.info('removing variants interacting with dosage sensitive genes or tumor repressor or oncogenes or any interaction with genes in same tad domain')
 logger.info('removing variants with nearby tumor repressor or oncogenes')
 
-if args.nearby_cancer_genes >0:
+if int(args.nearby_cancer_genes) >0:
 	filtered_data = filtered_data[(filtered_data['same_cancer_tad']==False)&(filtered_data['same_dosage_tad']==False)&(filtered_data['gene_density']<gd)&(filtered_data['dosage_sensitive_interaction']==0)&(filtered_data['repressive_region']==False)&(filtered_data['nearby_cancer_genes']==False)&(filtered_data['common_tad_count']==0)&(filtered_data['hic_interacted_gene_test']==False)]
 else:
 	filtered_data = filtered_data[(filtered_data['same_cancer_tad']==False)&(filtered_data['same_dosage_tad']==False)&(filtered_data['gene_density']<gd)&(filtered_data['dosage_sensitive_interaction']==0)&(filtered_data['repressive_region']==False)&(filtered_data['common_tad_count']==0)&(filtered_data['hic_interacted_gene_test']==False)]
