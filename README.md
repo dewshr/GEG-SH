@@ -209,3 +209,6 @@ Column header description based on the two ouput files and parameters selected.
 - ***genes_tad.bed :*** This file provides the TAD domain information for the genes in **sorted_gene_annotation.bed**. The file is generated using [bedtools intersect](https://bedtools.readthedocs.io/en/latest/content/tools/intersect.html) on the TAD domain file downloaded from ***Rao et al, Cell, 2014*** and gene annotation file from ***Ensembl Biomart hg19***. If the user provides own tad domain file, new file will be generated, else this file will be used as default.
 
 - ***gene_density_all_tad.csv :*** This is the pre-calculated gene density information for the TAD domains in **merged_gm12878.bed**. This file is generated using **genes_tad.bed**.
+
+# Citation
+Shrestha, D., Bag, A., Wu, R. et al. Genomics and epigenetics guided identification of tissue-specific genomic safe harbors. Genome Biol 23, 199 (2022).[[link]](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-022-02770-3)
